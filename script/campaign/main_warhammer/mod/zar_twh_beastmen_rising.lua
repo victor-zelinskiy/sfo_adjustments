@@ -81,6 +81,7 @@ function zar_twh_beastmen_rising()
 
 			if cm:get_saved_value("zar_bst_player_choice") == nil then
                 beastmen_uprising_listeners()
+				local bst = cm:get_faction("wh_dlc03_bst_beastmen");
                 if bst:is_human() then 
                     cm:set_saved_value("zar_bst_player_choice", 1);
                 else
