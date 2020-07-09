@@ -80,12 +80,7 @@ function zar_twh_beastmen_rising()
 			end;
 
 			if cm:get_saved_value("zar_bst_player_choice") == nil then
-                beastmen_uprising_listeners()
-                if bst:is_human() then 
-                    cm:set_saved_value("zar_bst_player_choice", 1);
-                else
-                    cm:set_saved_value("zar_bst_player_choice", 2);
-                end	
+				player_dilemma_listener();
 			end;
 
 			setup_bst_tribes_region_monitor();

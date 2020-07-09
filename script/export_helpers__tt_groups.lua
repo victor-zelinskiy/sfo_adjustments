@@ -1033,7 +1033,7 @@ local function sfo_add_unit_caps()
 			local prefix = string.gsub(units[i][2], "_rare", "")
 			local weight = units[i][3] --# assume weight: number
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "This unit is a Rare Unit and costs[[col:green]] "..weight.." [[/col]]points. \n Armies may have up to 7 Points worth of Rare Units. ",
+				_text = "This unit is a Rare Unit and costs[[col:green]] "..weight.." [[/col]]points. \n Armies may have up to 5 Points worth of Rare Units. ",
 				_image = "ui/custom/recruitment_controls/rare_units_"..weight..".png"
 			})
 		end
@@ -1093,7 +1093,7 @@ local function caps_first_tick()
         end
         if string.find(name, "rare") then
             rm:set_ui_name_for_group(name, "Rare Units")
-            rm:add_character_quantity_limit_for_group(name, 7)
+            rm:add_character_quantity_limit_for_group(name, 5)
         end
     end
     --this gives skrolk core plague monks
@@ -1123,7 +1123,16 @@ core:add_listener(
     false)
 
 
-sfo_add_unit_caps()
-cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context) 
-    caps_first_tick()
-end    
+
+
+
+if cm:get_saved_value("SFO_APPLY_CAPS") then
+    sfo_add_unit_caps()
+    cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context) 
+        caps_first_tick()
+    end
+else
+	rm:enforce_ai_restrictions(false)
+end
+    
+    
