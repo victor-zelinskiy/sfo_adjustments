@@ -1019,21 +1019,21 @@ local function sfo_add_unit_caps()
 		elseif string.find(units[i][2], "_core") then
 			local prefix = string.gsub(units[i][2], "_core", "")
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Базовый отряд. \n Армии могут содержать неограниченное количество базовых отрядов.",
+				_text = "This unit is a Core Unit. \n Armies may have an unlimited number of Core Units.",
 				_image = "ui/custom/recruitment_controls/common_units.png"
 			})
 		elseif string.find(units[i][2], "_special") then
 			local prefix = string.gsub(units[i][2], "_special", "")
 			local weight = units[i][3] --# assume weight: number
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Особый отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.",
+				_text = "This unit is a Special Unit and costs[[col:green]] "..weight.." [[/col]]points. \n Armies may have up to 10 Points worth of Special Units. ",
 				_image = "ui/custom/recruitment_controls/special_units_"..weight..".png"
 			})
 		elseif string.find(units[i][2], "_rare") then
 			local prefix = string.gsub(units[i][2], "_rare", "")
 			local weight = units[i][3] --# assume weight: number
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.",
+				_text = "This unit is a Rare Unit and costs[[col:green]] "..weight.." [[/col]]points. \n Armies may have up to 5 Points worth of Rare Units. ",
 				_image = "ui/custom/recruitment_controls/rare_units_"..weight..".png"
 			})
 		end
@@ -1084,22 +1084,22 @@ end
 local function caps_first_tick()
     for name, _ in pairs(groups) do
         if string.find(name, "core") then
-            rm:set_ui_name_for_group(name, "Базовых отрядов")
+            rm:set_ui_name_for_group(name, "Core Units")
             --rm:add_character_quantity_limit_for_group(name, 21)
         end
         if string.find(name, "special") then
-            rm:set_ui_name_for_group(name, "Особый отряд")
+            rm:set_ui_name_for_group(name, "Special Units")
             rm:add_character_quantity_limit_for_group(name, 10)
         end
         if string.find(name, "rare") then
-            rm:set_ui_name_for_group(name, "Элитный отряд")
-            rm:add_character_quantity_limit_for_group(name, 7)
+            rm:set_ui_name_for_group(name, "Rare Units")
+            rm:add_character_quantity_limit_for_group(name, 5)
         end
     end
     --this gives skrolk core plague monks
     rm:create_unit_override("wh2_main_skv_inf_plague_monks", "core_plague_monks")
     rm:add_subtype_filter_for_unit_override("wh2_main_skv_lord_skrolk", "core_plague_monks")
-    rm:set_ui_profile_for_unit_override("core_plague_monks", "[[col:yellow]]Специальное правило: [[/col]] в армии Лорда Скролка Чумные Монахи считаются Базовыми Отрядами. \n Армии могут иметь неограниченное количество базовых отрядов.", "ui/custom/recruitment_controls/common_units.png")
+    rm:set_ui_profile_for_unit_override("core_plague_monks", "[[col:yellow]]Special Rule: [[/col]] Lord Skrolk can recruit Plague Monks as Core units in his armies. \n Armies may have an unlimited number of Core Units.", "ui/custom/recruitment_controls/common_units.png")
 
 end;
 
