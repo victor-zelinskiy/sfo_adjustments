@@ -5,8 +5,8 @@ local rm = _G.rm
 local GROUP_KEY_TO_UIC = {} --:map<string, CA_UIC>
 
 local group_image_paths = {
-    ["special"] = {"ui/custom/recruitment_controls/special_units_1.png", "Special"},
-    ["rare"] = {"ui/custom/recruitment_controls/rare_units_1.png", "Rare"}
+    ["special"] = {"ui/custom/recruitment_controls/special_units_1.png", "Особых"},
+    ["rare"] = {"ui/custom/recruitment_controls/rare_units_1.png", "Элитных"}
 }--:map<string, vector<string>>
 
 local created_uic = {} --:vector<string>
@@ -68,7 +68,7 @@ local function update_display(uic, rec_char, groupID)
         col = "red"
     end
     if name and quantity and cap then
-        local tt_string = "Вы использовали "..tostring(quantity).." из "..tostring(cap).." "..name.." доступных очков"
+        local tt_string = "Вы использовали "..tostring(quantity).." из "..tostring(cap).." доступных "..name.." очков"
         uic:SetTooltipText(tt_string, true)
     end
 end
