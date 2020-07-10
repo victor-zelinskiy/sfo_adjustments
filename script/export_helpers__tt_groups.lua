@@ -1019,21 +1019,21 @@ local function sfo_add_unit_caps()
 		elseif string.find(units[i][2], "_core") then
 			local prefix = string.gsub(units[i][2], "_core", "")
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Базовый отряд. \n Армии могут содержать неограниченное количество базовых отрядов.",
+				_text = "Это Базовый отряд. \n Армии могут содержать неограниченное количество базовых отрядов.", --changed line
 				_image = "ui/custom/recruitment_controls/common_units.png"
 			})
 		elseif string.find(units[i][2], "_special") then
 			local prefix = string.gsub(units[i][2], "_special", "")
 			local weight = units[i][3] --# assume weight: number
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Особый отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.",
+				_text = "Это Особый отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.", --changed line
 				_image = "ui/custom/recruitment_controls/special_units_"..weight..".png"
 			})
 		elseif string.find(units[i][2], "_rare") then
 			local prefix = string.gsub(units[i][2], "_rare", "")
 			local weight = units[i][3] --# assume weight: number
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.",
+				_text = "Это Элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.", --changed line
 				_image = "ui/custom/recruitment_controls/rare_units_"..weight..".png"
 			})
 		end
@@ -1099,7 +1099,7 @@ local function caps_first_tick()
     --this gives skrolk core plague monks
     rm:create_unit_override("wh2_main_skv_inf_plague_monks", "core_plague_monks")
     rm:add_subtype_filter_for_unit_override("wh2_main_skv_lord_skrolk", "core_plague_monks")
-    rm:set_ui_profile_for_unit_override("core_plague_monks", "[[col:yellow]]Специальное правило: [[/col]] в армии Лорда Скролка Чумные Монахи считаются Базовыми Отрядами. \n Армии могут иметь неограниченное количество базовых отрядов.", "ui/custom/recruitment_controls/common_units.png")
+    rm:set_ui_profile_for_unit_override("core_plague_monks", "[[col:yellow]]Специальное правило: [[/col]] в армии Лорда Скролка Чумные Монахи считаются Базовыми Отрядами. \n Армии могут иметь неограниченное количество базовых отрядов.", "ui/custom/recruitment_controls/common_units.png") --changed line
 
 end;
 
@@ -1122,8 +1122,9 @@ core:add_listener(
     end,
     false)
 
-
+--changed block
 sfo_add_unit_caps()
 cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context) 
     caps_first_tick()
+--@changed block
 end    

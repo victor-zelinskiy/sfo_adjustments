@@ -198,8 +198,10 @@ cm:add_first_tick_callback(function()
             --tell RM which character is selected. This is core to the entire system.
             local current_character, was_created = rm:set_current_character(character:command_queue_index()) 
             cm:callback(function()
+                --changed block
                 rm:check_all_units_on_character(current_character)
                 rm:enforce_all_units_on_current_character()
+                --@changed block
                 core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
             end, 0.1)
         end,
@@ -243,6 +245,7 @@ cm:add_first_tick_callback(function()
     )
 
 
+    --changed block
     core:add_listener(
             "player_stance_monitor",
             "ForceAdoptsStance",
@@ -294,6 +297,7 @@ cm:add_first_tick_callback(function()
             end,
             true
     );
+    --@changed block
 
     --multiplayer safe listener
     core:add_listener(
