@@ -815,7 +815,7 @@ function recruiter_manager.remove_unit_from_character_queue_and_refresh_limits(s
                     if should_restrict or ((was_restricted and (not should_restrict)) 
                     and grouped_unit:key() == unitID and (not did_restrict)) then
                         rec_char:set_unit_restriction(grouped_unit:key(),
-                            should_restrict, "Это "..self:get_ui_name_for_group(groupID).." стоимостью "..weight.." очков, у этой армии доступно только "..tostring(restriction_quantity - group_count).."." --changed line
+                            should_restrict, "Это "..self:get_ui_name_for_group(groupID).." стоимостью "..weight.." очков, у этой армии доступно только "..tostring(restriction_quantity - new_count).."." --changed line
                         )
                     end
                 end
@@ -848,7 +848,7 @@ function recruiter_manager.add_unit_to_character_queue_and_refresh_limits(self, 
                 end
                 if should_restrict or (not did_restrict) then
                     rec_char:set_unit_restriction(grouped_unit:key(),
-                        should_restrict, "Это "..self:get_ui_name_for_group(groupID).." стоимостью "..weight.." очков, у этой армии доступно только "..tostring(restriction_quantity - group_count).."." --changed line
+                        should_restrict, "Это "..self:get_ui_name_for_group(groupID).." стоимостью "..weight.." очков, у этой армии доступно только "..tostring(restriction_quantity - new_count).."." --changed line
                     )
                 end
             end
