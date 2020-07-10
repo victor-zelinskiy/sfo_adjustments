@@ -82,10 +82,15 @@ cm:add_first_tick_callback(function()
             end
             if not current_character:is_queue_stale() then --if we aren't stale, we must have a unit
                 rm:log("Queued Unit name to be removed is: "..unitID)
+                --changed block
+                current_character:clear_restrictions()
                 rm:remove_unit_from_character_queue_and_refresh_limits(unitID, current_character)
-                rm:enforce_unit_and_grouped_units(unitID, rm:current_character())
+                rm:enforce_unit_and_grouped_units(unitID, current_character)
+                rm:check_individual_unit_on_character(unitID, current_character)
+                rm:enforce_all_units_on_current_character()
+                core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(current_character:command_queue_index()))
                 rm:output_state(current_character) -- will only fire when logging is enabled.
-                core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+                --@changed block
             else --backup route.    
                 --if we are stale, we might have a unit, but we don't want to rely on anything here!.
                 cm:remove_callback("RMOnQueue")
