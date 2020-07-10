@@ -375,14 +375,18 @@ cm:add_first_tick_callback(function()
         end,
         function(context)
             rm:log("PATH START Human character disbanded a unit!")
+            --changed block
+            local current_character = rm:current_character()
+            current_character:clear_restrictions()
             local unit = context:unit()
             --# assume unit: CA_UNIT
             --remove the unit from the army
             rm:get_character_by_cqi(unit:force_commander():command_queue_index()):remove_unit_from_army(unit:unit_key())
             --check the unit (+groups) again.
-            rm:check_individual_unit_on_character(unit:unit_key(), rm:current_character())
+            rm:check_individual_unit_on_character(unit:unit_key(), current_character)
             rm:enforce_all_units_on_current_character()
-            rm:output_state(rm:current_character())
+            rm:output_state(current_character)
+            --@changed block
         end,
         true);
     --add merged listener
