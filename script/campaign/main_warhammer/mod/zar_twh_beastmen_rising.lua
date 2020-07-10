@@ -80,13 +80,15 @@ function zar_twh_beastmen_rising()
 			end;
 
 			if cm:get_saved_value("zar_bst_player_choice") == nil then
+				--changed block
                 beastmen_uprising_listeners()
 				local bst = cm:get_faction("wh_dlc03_bst_beastmen");
                 if bst:is_human() then 
                     cm:set_saved_value("zar_bst_player_choice", 1);
                 else
                     cm:set_saved_value("zar_bst_player_choice", 2);
-                end	
+                end
+				--@changed block
 			end;
 
 			setup_bst_tribes_region_monitor();
@@ -114,7 +116,7 @@ function beastmen_setup()
 		local faction = cm:get_faction(BEASTMEN_FACTIONS[i]);
 		if faction:is_human() then
 			local k = 0
-			for j = 1, #beastmen_missions do 
+			for j = 1, #beastmen_missions do
 				k = k + 1
 				local mm = mission_manager:new(BEASTMEN_FACTIONS[i], beastmen_missions[j]);
 				mm:add_new_objective("MOVE_TO_REGION");

@@ -1122,8 +1122,9 @@ core:add_listener(
     end,
     false)
 
-
+--changed block
 sfo_add_unit_caps()
 cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context) 
     caps_first_tick()
-end    
+--@changed block
+end
