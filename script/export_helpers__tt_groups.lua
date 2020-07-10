@@ -1026,14 +1026,14 @@ local function sfo_add_unit_caps()
 			local prefix = string.gsub(units[i][2], "_special", "")
 			local weight = units[i][3] --# assume weight: number
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Специальный отряд стоимостью[[col:green]] "..weight.." [[/col]]очков. \n Армии могут содержать до 10 очков специальных отрядов. ",
+				_text = "Это Особый отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.",
 				_image = "ui/custom/recruitment_controls/special_units_"..weight..".png"
 			})
 		elseif string.find(units[i][2], "_rare") then
 			local prefix = string.gsub(units[i][2], "_rare", "")
 			local weight = units[i][3] --# assume weight: number
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]очков. \n Армии могут содержать до 7 очков элитных отрядов. ",
+				_text = "Это Элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.",
 				_image = "ui/custom/recruitment_controls/rare_units_"..weight..".png"
 			})
 		end
@@ -1088,11 +1088,11 @@ local function caps_first_tick()
             --rm:add_character_quantity_limit_for_group(name, 21)
         end
         if string.find(name, "special") then
-            rm:set_ui_name_for_group(name, "Специальных отрядов")
+            rm:set_ui_name_for_group(name, "Особый отряд")
             rm:add_character_quantity_limit_for_group(name, 10)
         end
         if string.find(name, "rare") then
-            rm:set_ui_name_for_group(name, "Элитных отрядов")
+            rm:set_ui_name_for_group(name, "Элитный отряд")
             rm:add_character_quantity_limit_for_group(name, 7)
         end
     end

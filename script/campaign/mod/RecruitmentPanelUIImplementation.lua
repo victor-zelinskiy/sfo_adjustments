@@ -198,10 +198,8 @@ cm:add_first_tick_callback(function()
             --tell RM which character is selected. This is core to the entire system.
             local current_character, was_created = rm:set_current_character(character:command_queue_index()) 
             cm:callback(function()
-                if was_created then
-                    rm:check_all_units_on_character(current_character)
-                    rm:enforce_all_units_on_current_character()
-                end
+                rm:check_all_units_on_character(current_character)
+                rm:enforce_all_units_on_current_character()
                 core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
             end, 0.1)
         end,
@@ -243,6 +241,59 @@ cm:add_first_tick_callback(function()
         end,
         true
     )
+
+
+    core:add_listener(
+            "player_stance_monitor",
+            "ForceAdoptsStance",
+            function(context)
+                return context:stance_adopted() == 4 and context:military_force():faction():is_human() == true;
+            end,
+            function()
+                cm:callback(function()
+                    local rec_opt = {}
+                    local current_character = rm:current_character()
+                    local pathset = current_character._UIPathSet
+                    local paths_to_check = pathset:get_path_list(current_character)
+                    for j = 1, #paths_to_check do
+                        local recruitmentList = find_uicomponent_from_table(core:get_ui_root(), pathset:get_path(paths_to_check[j]))
+                        if not not recruitmentList then
+                            for i = 0, recruitmentList:ChildCount() - 1 do
+                                local recruitmentOption = UIComponent(recruitmentList:Find(i)):Id();
+                                local unitID = string.gsub(recruitmentOption, "_recruitable", "")
+                                rec_opt[unitID] = true
+                            end
+                        end
+                    end
+                    rm:check_all_ui_recruitment_options(current_character, rec_opt)
+                    rm:enforce_units_by_table(rec_opt, current_character)
+                    core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+                    rm:output_state(rm:current_character())
+                end, 0.1)
+            end,
+            true
+    );
+
+
+    core:add_listener(
+            "RecruiterManagerOkButtonListener",
+            "ComponentLClickUp",
+            function(context) return context.string == "button_ok"
+                    and UIComponent(UIComponent(context.component):Parent()):Id() == "ok_cancel_buttongroup" end,
+            function()
+                cm:callback(function()
+                    local current_character = rm:current_character()
+                    if current_character ~= nil then
+                        current_character:set_army_stale()
+                        rm:check_all_units_on_character(current_character)
+                        rm:enforce_all_units_on_current_character()
+                        rm:output_state(current_character)
+                        core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+                    end
+                end, 0.1)
+            end,
+            true
+    );
 
     --multiplayer safe listener
     core:add_listener(
