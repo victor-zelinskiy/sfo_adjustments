@@ -5,8 +5,8 @@ local rm = _G.rm
 local GROUP_KEY_TO_UIC = {} --:map<string, CA_UIC>
 
 local group_image_paths = {
-    ["special"] = {"ui/custom/recruitment_controls/special_units_1.png", "очков Особых отрядов"}, --changed line
-    ["rare"] = {"ui/custom/recruitment_controls/rare_units_1.png", "очков Элитных отрядов"} --changed line
+    ["special"] = {"ui/custom/recruitment_controls/special_units_1.png", "Special"},
+    ["rare"] = {"ui/custom/recruitment_controls/rare_units_1.png", "Rare"}
 }--:map<string, vector<string>>
 
 local created_uic = {} --:vector<string>
@@ -70,7 +70,7 @@ local function update_display(uic, rec_char, groupID)
             col = "red"
         end
         if name and current_count and cap then
-            local tt_string = "Вы использовали "..tostring(current_count).." из "..tostring(cap).." доступных "..name --changed line
+            local tt_string = "You have used "..tostring(current_count).." of the "..tostring(cap).." "..name.." points available to this force! (Army Caps)"
             uic:SetTooltipText(tt_string, true)
         end
     end, 0.2, "updateDisplayCallback")
