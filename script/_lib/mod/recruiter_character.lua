@@ -119,6 +119,17 @@ function recruiter_character.add_lock_text(self, unitID, lock_reason)
     end
 end
 
+--changed block
+function recruiter_character.clear_restrictions(self)
+    for i in pairs (self._UILockTexts) do
+        self._UILockTexts[i] = nil
+    end
+    for i in pairs (self._restrictedUnits) do
+        self._restrictedUnits[i] = false
+    end
+end
+--@changed_block
+
 ---------------------------------
 ----OWNED UNITS FOR OVERRIDES----
 ---------------------------------
