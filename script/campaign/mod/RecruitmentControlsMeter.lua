@@ -58,9 +58,6 @@ local function update_display(uic, rec_char, groupID)
     cm:callback( function()
         local current_count = rec_char:get_group_counts_on_character(groupID)
         local cap = rec_char:get_quantity_limit_for_group(groupID)
-        if string.find(groupID, "rare") then
-            _G.sfo:log("vize current_count: " .. current_count .. " cap: " .. cap)
-        end
         if image then
             uic:SetImagePath(image, 1)
         end

@@ -263,7 +263,12 @@ end
 function recruiter_manager.GetQueuedUnit(self, index, prefix)
     local queuedUnit = find_uicomponent(core:get_ui_root(), "main_units_panel", "units", prefix.. tostring(index));
     if not not queuedUnit then
+        cm:steal_user_input(false);
         queuedUnit:SimulateMouseOn();
+        cm:steal_user_input(true);
+        cm:callback( function()
+            cm:steal_user_input(false);
+        end, 0.3, "stealUserInput0")
         local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
         local rawstring = unitInfo:GetStateText();
         local infostart = string.find(rawstring, "unit/") + 5;
