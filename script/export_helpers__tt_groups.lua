@@ -1014,6 +1014,15 @@ local function sfo_add_unit_caps()
 		groups[units[i][2]] = true;
 		rm:add_unit_to_group(units[i][1], units[i][2])
 		local override = unit_text_overrides[units[i][1]]
+        --changed block
+        local points_name = "очков"
+        local weight = units[i][3] --# assume weight: number
+        if weight == 1 then
+            points_name = "очко"
+        elseif weight == 2 then
+            points_name = "очка"
+        end
+        --@changed block
 		if override then
 			rm:set_ui_profile_for_unit(units[i][1], override)
 		elseif string.find(units[i][2], "_core") then
@@ -1024,18 +1033,20 @@ local function sfo_add_unit_caps()
 			})
 		elseif string.find(units[i][2], "_special") then
 			local prefix = string.gsub(units[i][2], "_special", "")
-			local weight = units[i][3] --# assume weight: number
+            --changed block
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Особый отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.", --changed line
+				_text = "Это Особый отряд стоимостью[[col:green]] "..weight.." [[/col]]" .. points_name .. " особых отрядов.", --changed line
 				_image = "ui/custom/recruitment_controls/special_units_"..weight..".png"
 			})
+            --@changed block
 		elseif string.find(units[i][2], "_rare") then
 			local prefix = string.gsub(units[i][2], "_rare", "")
-			local weight = units[i][3] --# assume weight: number
+            --changed block
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.", --changed line
+				_text = "Это Элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]" .. points_name .. " элитных отрядов.",
 				_image = "ui/custom/recruitment_controls/rare_units_"..weight..".png"
 			})
+            --@changed block
 		end
 	end
 

@@ -5,8 +5,8 @@ local rm = _G.rm
 local GROUP_KEY_TO_UIC = {} --:map<string, CA_UIC>
 
 local group_image_paths = {
-    ["special"] = {"ui/custom/recruitment_controls/special_units_1.png", "Особых"}, --changed line
-    ["rare"] = {"ui/custom/recruitment_controls/rare_units_1.png", "Элитных"} --changed line
+    ["special"] = {"ui/custom/recruitment_controls/special_units_1.png", "очков Особых отрядов"}, --changed line
+    ["rare"] = {"ui/custom/recruitment_controls/rare_units_1.png", "очков Элитных отрядов"} --changed line
 }--:map<string, vector<string>>
 
 local created_uic = {} --:vector<string>
@@ -54,23 +54,30 @@ local function update_display(uic, rec_char, groupID)
             break
         end
     end
-    local quantity = rec_char:get_group_counts_on_character(groupID)
-    local cap = rec_char:get_quantity_limit_for_group(groupID)
-    if image then
-        uic:SetImagePath(image, 1)
-    end
-    if quantity and cap then
-        uic:SetStateText(tostring(cap - quantity))
-        uic:SetVisible(true)
-    end
-    local col = "dark_g"
-    if quantity >= cap then
-        col = "red"
-    end
-    if name and quantity and cap then
-        local tt_string = "Вы использовали "..tostring(quantity).." из "..tostring(cap).." доступных "..name.." очков" --changed line
-        uic:SetTooltipText(tt_string, true)
-    end
+    --changed block
+    cm:callback( function()
+        local current_count = rec_char:get_group_counts_on_character(groupID)
+        local cap = rec_char:get_quantity_limit_for_group(groupID)
+        if string.find(groupID, "rare") then
+            _G.sfo:log("vize current_count: " .. current_count .. " cap: " .. cap)
+        end
+        if image then
+            uic:SetImagePath(image, 1)
+        end
+        if current_count and cap then
+            uic:SetStateText(tostring(cap - current_count))
+            uic:SetVisible(true)
+        end
+        local col = "dark_g"
+        if current_count >= cap then
+            col = "red"
+        end
+        if name and current_count and cap then
+            local tt_string = "Вы использовали "..tostring(current_count).." из "..tostring(cap).." доступных "..name --changed line
+            uic:SetTooltipText(tt_string, true)
+        end
+    end, 0.2, "updateDisplayCallback")
+    --@changed block
 end
 
 core:add_listener(
