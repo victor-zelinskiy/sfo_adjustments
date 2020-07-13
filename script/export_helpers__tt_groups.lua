@@ -1014,28 +1014,39 @@ local function sfo_add_unit_caps()
 		groups[units[i][2]] = true;
 		rm:add_unit_to_group(units[i][1], units[i][2])
 		local override = unit_text_overrides[units[i][1]]
+        --changed block
+        local points_name = "очков"
+        local weight = units[i][3] --# assume weight: number
+        if weight == 1 then
+            points_name = "очко"
+        elseif weight == 2 then
+            points_name = "очка"
+        end
+        --@changed block
 		if override then
 			rm:set_ui_profile_for_unit(units[i][1], override)
 		elseif string.find(units[i][2], "_core") then
 			local prefix = string.gsub(units[i][2], "_core", "")
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Базовый отряд. \n Армии могут содержать неограниченное количество базовых отрядов.",
+				_text = "Это Базовый отряд. \n Армии могут содержать неограниченное количество базовых отрядов.", --changed line
 				_image = "ui/custom/recruitment_controls/common_units.png"
 			})
 		elseif string.find(units[i][2], "_special") then
 			local prefix = string.gsub(units[i][2], "_special", "")
-			local weight = units[i][3] --# assume weight: number
+            --changed block
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Особый отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.",
+				_text = "Это Особый отряд стоимостью[[col:green]] "..weight.." [[/col]]" .. points_name .. " особых отрядов.", --changed line
 				_image = "ui/custom/recruitment_controls/special_units_"..weight..".png"
 			})
+            --@changed block
 		elseif string.find(units[i][2], "_rare") then
 			local prefix = string.gsub(units[i][2], "_rare", "")
-			local weight = units[i][3] --# assume weight: number
+            --changed block
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]очков.",
+				_text = "Это Элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]" .. points_name .. " элитных отрядов.",
 				_image = "ui/custom/recruitment_controls/rare_units_"..weight..".png"
 			})
+            --@changed block
 		end
 	end
 
@@ -1099,7 +1110,7 @@ local function caps_first_tick()
     --this gives skrolk core plague monks
     rm:create_unit_override("wh2_main_skv_inf_plague_monks", "core_plague_monks")
     rm:add_subtype_filter_for_unit_override("wh2_main_skv_lord_skrolk", "core_plague_monks")
-    rm:set_ui_profile_for_unit_override("core_plague_monks", "[[col:yellow]]Специальное правило: [[/col]] в армии Лорда Скролка Чумные Монахи считаются Базовыми Отрядами. \n Армии могут иметь неограниченное количество базовых отрядов.", "ui/custom/recruitment_controls/common_units.png")
+    rm:set_ui_profile_for_unit_override("core_plague_monks", "[[col:yellow]]Специальное правило: [[/col]] в армии Лорда Скролка Чумные Монахи считаются Базовыми Отрядами. \n Армии могут иметь неограниченное количество базовых отрядов.", "ui/custom/recruitment_controls/common_units.png") --changed line
 
 end;
 
@@ -1124,7 +1135,7 @@ core:add_listener(
 
 --changed block
 sfo_add_unit_caps()
-cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context) 
+cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context)
     caps_first_tick()
 --@changed block
 end

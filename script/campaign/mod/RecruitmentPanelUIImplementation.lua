@@ -539,9 +539,9 @@ local function LockExchangeButton(reason, number_of_units_first, number_of_units
         end
         ok_button:SetDisabled(true)
         if number_of_units_first > 20 then
-            ok_button:SetTooltipText("[[col:red]]Exchange is impossible: too many units in a single army! ("..tostring(number_of_units_first).."/20)[[/col]]", false)
+            ok_button:SetTooltipText("[[col:red]]Обмен невозможен: слишком много отрядов в одной армии! ("..tostring(number_of_units_first).."/20)[[/col]]", false)
         elseif number_of_units_second > 20 then
-            ok_button:SetTooltipText("[[col:red]]Exchange is impossible: too many units in a single army! ("..tostring(number_of_units_second).."/20)[[/col]]", false)
+            ok_button:SetTooltipText("[[col:red]]Обмен невозможен: слишком много отрядов в одной армии! ("..tostring(number_of_units_second).."/20)[[/col]]", false)
         else
             ok_button:SetTooltipText(reason, false)
         end
@@ -558,9 +558,9 @@ local function UnlockExchangeButton(number_of_units_first, number_of_units_secon
     if not not ok_button then
         ok_button:SetDisabled(false)
         if number_of_units_first > 20 then
-            ok_button:SetTooltipText("[[col:red]]Exchange is impossible: too many units in a single army! ("..tostring(number_of_units_first).."/20)[[/col]]", false)
+            ok_button:SetTooltipText("[[col:red]]Обмен невозможен: слишком много отрядов в одной армии! ("..tostring(number_of_units_first).."/20)[[/col]]", false)
         elseif number_of_units_second > 20 then
-            ok_button:SetTooltipText("[[col:red]]Exchange is impossible: too many units in a single army! ("..tostring(number_of_units_second).."/20)[[/col]]", false)
+            ok_button:SetTooltipText("[[col:red]]Обмен невозможен: слишком много отрядов в одной армии! ("..tostring(number_of_units_second).."/20)[[/col]]", false)
         else
             ok_button:SetTooltipText('', false)
         end
@@ -591,7 +591,11 @@ local function check_individual_army_validity(army_count, rec_char, subculture_p
         local limit = rec_char:get_quantity_limit_for_group(groupID)
         local count = (groups[groupID] or 0);
         if count > limit then
-            table.insert(result, {groupID, count, limit, false, "[[col:red]]Exchange is impossible: too many "..rm:get_ui_name_for_group(groupID).." in a single army! ("..count.."/"..limit..")[[/col]]"})
+            if string.find(groupID, "special") then
+                table.insert(result, {groupID, count, limit, false, "[[col:red]]Обмен невозможен: слишком много Особых отрядов в одной армии! ("..count.."/"..limit..")[[/col]]"})
+            else
+                table.insert(result, {groupID, count, limit, false, "[[col:red]]Обмен невозможен: слишком много Элитных отрядов в одной армии! ("..count.."/"..limit..")[[/col]]"})
+            end
         else
             table.insert(result, {groupID, count, limit, true, "valid"})
         end
