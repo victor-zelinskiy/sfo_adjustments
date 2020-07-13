@@ -32,6 +32,92 @@ subculture_to_prefix["wh_main_sc_ksl_kislev"] = "emp"
 subculture_to_prefix["wh_main_sc_grn_savage_orcs"] = "grn"
 --end copy paste
 
+
+--changed block
+local exchange_armies_cache = {}
+
+local indexes_to_update = {
+    false, --1
+    false, --2
+    false, --3
+    false, --4
+    false, --5
+    false, --6
+    false, --7
+    false, --8
+    false, --9
+    false, --10
+    false, --11
+    false, --12
+    false, --13
+    false, --14
+    false, --15
+    false, --16
+    false, --17
+    false, --18
+    false, --19
+    false, --20
+}
+
+local function CacheUnitNameInExchange(panel, index)
+    local Panel = find_uicomponent(core:get_ui_root(), "unit_exchange", panel)
+    if not not Panel then
+        local armyUnit = find_uicomponent(Panel, "units", "UnitCard" .. index);
+        if not not armyUnit then
+            if exchange_armies_cache[panel] == nil then
+                exchange_armies_cache[panel] = {}
+            end
+            armyUnit:SimulateMouseOn();
+            local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
+            local rawstring = unitInfo:GetStateText();
+            local infostart = string.find(rawstring, "unit/") + 5;
+            local infoend = string.find(rawstring, "]]") - 1;
+            local armyUnitName = string.sub(rawstring, infostart, infoend)
+            local is_transfered = false
+            local transferArrow = find_uicomponent(armyUnit, "exchange_arrow")
+            if not not transferArrow then
+                is_transfered = transferArrow:Visible()
+            end
+            armyUnit:SimulateMouseOff()
+            exchange_armies_cache[panel][index] = {armyUnitName, is_transfered};
+        else
+            local agentUnit = find_uicomponent(Panel, "units", "Agent " .. index);
+            if not not agentUnit then
+                if exchange_armies_cache[panel] == nil then
+                    exchange_armies_cache[panel] = {}
+                end
+                agentUnit:SimulateMouseOn();
+                local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
+                local rawstring = unitInfo:GetStateText();
+                local infostart = string.find(rawstring, "unit/") + 5;
+                local infoend = string.find(rawstring, "]]") - 1;
+                local armyUnitName = string.sub(rawstring, infostart, infoend)
+                local is_transfered = false
+                local transferArrow = find_uicomponent(agentUnit, "exchange_arrow")
+                if not not transferArrow then
+                    is_transfered = transferArrow:Visible()
+                end
+                agentUnit:SimulateMouseOff()
+                exchange_armies_cache[panel][index] = {armyUnitName, is_transfered};
+            end
+        end
+    end
+end
+
+
+local function cache_armies()
+    for i = 1, 20 do
+        CacheUnitNameInExchange("main_units_panel_1", i)
+        CacheUnitNameInExchange("main_units_panel_2", i)
+    end
+end
+
+local function update_cache(index)
+    CacheUnitNameInExchange("main_units_panel_1", index)
+    CacheUnitNameInExchange("main_units_panel_2", index)
+end
+--@changed block
+
 cm:add_first_tick_callback(function()
     --add unit added to queue listener
     core:add_listener(
@@ -483,13 +569,11 @@ local function find_second_army()
     end
 end
 
---changed block
 --v function(panel: string, index: number) --> (string, boolean)
 local function GetUnitNameInExchange(panel, index)
     local Panel = find_uicomponent(core:get_ui_root(), "unit_exchange", panel)
     if not not Panel then
         local armyUnit = find_uicomponent(Panel, "units", "UnitCard" .. index);
-        local agentUnit = find_uicomponent(Panel, "units", "Agent " .. index);
         if not not armyUnit then
             armyUnit:SimulateMouseOn();
             local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
@@ -500,19 +584,6 @@ local function GetUnitNameInExchange(panel, index)
             rm:log("Found unit ["..armyUnitName.."] at ["..index.."] ")
             local is_transfered = false --:boolean
             local transferArrow = find_uicomponent(armyUnit, "exchange_arrow")
-            if not not transferArrow then 
-                is_transfered = transferArrow:Visible()
-            end
-            return armyUnitName, is_transfered
-        elseif not not agentUnit then
-            agentUnit:SimulateMouseOn();
-            local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
-            local rawstring = unitInfo:GetStateText();
-            local infostart = string.find(rawstring, "unit/") + 5;
-            local infoend = string.find(rawstring, "]]") - 1;
-            local armyUnitName = string.sub(rawstring, infostart, infoend)
-            local is_transfered = false --:boolean
-            local transferArrow = find_uicomponent(agentUnit, "exchange_arrow")
             if not not transferArrow then
                 is_transfered = transferArrow:Visible()
             end
@@ -523,7 +594,6 @@ local function GetUnitNameInExchange(panel, index)
     end
     return nil, false
 end
---@changed block
 
 --changed block
 --v function(reason: string)
@@ -625,42 +695,49 @@ end
 local function count_armies()
     local first_army_count = {} --:map<string, number>
     local second_army_count = {} --:map<string, number>
-    local clock = os.clock()
+    local sub_exchange_armies_cache_1 = exchange_armies_cache["main_units_panel_1"]
+    local sub_exchange_armies_cache_2 = exchange_armies_cache["main_units_panel_2"]
     for i = 1, 20 do
-        local unitID, is_transfer = GetUnitNameInExchange("main_units_panel_1", i)
-        if not not unitID then
-            if is_transfer then
-                if second_army_count[unitID] == nil then
-                    second_army_count[unitID] = 0
+        if sub_exchange_armies_cache_1 then
+            local values = sub_exchange_armies_cache_1[i];
+            if values then
+                local unitID = values[1]
+                if not not unitID then
+                    if values[2] then
+                        if second_army_count[unitID] == nil then
+                            second_army_count[unitID] = 0
+                        end
+                        second_army_count[unitID] = second_army_count[unitID] + 1
+                    else
+                        if first_army_count[unitID] == nil then
+                            first_army_count[unitID] = 0
+                        end
+                        first_army_count[unitID] = first_army_count[unitID] + 1
+                    end
                 end
-                second_army_count[unitID] = second_army_count[unitID] + 1
-            else
-                if first_army_count[unitID] == nil then
-                    first_army_count[unitID] = 0
+            end
+        end
+
+        if sub_exchange_armies_cache_2 then
+            local values = sub_exchange_armies_cache_2[i];
+            if values then
+                local unitID = values[1]
+                if not not unitID then
+                    if not values[2] then
+                        if second_army_count[unitID] == nil then
+                            second_army_count[unitID] = 0
+                        end
+                        second_army_count[unitID] = second_army_count[unitID] + 1
+                    else
+                        if first_army_count[unitID] == nil then
+                            first_army_count[unitID] = 0
+                        end
+                        first_army_count[unitID] = first_army_count[unitID] + 1
+                    end
                 end
-                first_army_count[unitID] = first_army_count[unitID] + 1
             end
         end
     end
-    rm:log("First army processed: ".. string.format("elapsed time: %.2f", os.clock() - clock))
-    local clock = os.clock()
-    for i = 1, 20 do
-        local unitID, is_transfer = GetUnitNameInExchange("main_units_panel_2", i)
-        if not not unitID then
-            if not is_transfer then
-                if second_army_count[unitID] == nil then
-                    second_army_count[unitID] = 0
-                end
-                second_army_count[unitID] = second_army_count[unitID] + 1
-            else
-                if first_army_count[unitID] == nil then
-                    first_army_count[unitID] = 0
-                end
-                first_army_count[unitID] = first_army_count[unitID] + 1
-            end
-        end
-    end
-    rm:log("Secondary army processed: ".. string.format("elapsed time: %.2f", os.clock() - clock))
     return first_army_count, second_army_count
 end
 
@@ -804,6 +881,36 @@ local function number_of_units(army)
     end
     return total_count;
 end
+
+local function onExchangeOptionClicked()
+    cm:remove_callback("RMTransferReval")
+    cm:callback(function()
+        for i = 1, 20 do
+            if indexes_to_update[i] then
+                update_cache(i);
+                indexes_to_update[i] = false
+            end
+        end
+        local first_army, second_army = count_armies()
+        local number_of_units_first, number_of_units_second = number_of_units(first_army), number_of_units(second_army);
+        local char = cm:get_character_by_cqi(RM_TRANSFERS.first);
+        local subculture_prefix = subculture_to_prefix[char:faction():subculture()];
+        if not subculture_prefix then
+            UnlockExchangeButton(number_of_units_first, number_of_units_second)
+            return
+        end
+        local first_result = check_individual_army_validity(first_army, rm:get_character_by_cqi(RM_TRANSFERS.first), subculture_prefix)
+        local second_result = check_individual_army_validity(second_army, rm:get_character_by_cqi(RM_TRANSFERS.second), subculture_prefix)
+        addDisplayForFirstArmy(RM_TRANSFERS.first, first_result, subculture_prefix);
+        addDisplayForSecondArmy(RM_TRANSFERS.second, second_result, subculture_prefix);
+        local valid_armies, reason = are_armies_valid(first_result, second_result)
+        if valid_armies then
+            UnlockExchangeButton(number_of_units_first, number_of_units_second)
+        else
+            LockExchangeButton(reason, number_of_units_first, number_of_units_second)
+        end
+    end, 0.1, "RMTransferReval")
+end
 --@changed block
 
 cm:add_first_tick_callback(function()
@@ -819,6 +926,7 @@ cm:add_first_tick_callback(function()
                 RM_TRANSFERS.first = rm._UICurrentCharacter
                 RM_TRANSFERS.second = find_second_army()
                 --changed block
+                cache_armies()
                 local first_army, second_army = count_armies()
                 local number_of_units_first, number_of_units_second = number_of_units(first_army), number_of_units(second_army);
                 local char = cm:get_character_by_cqi(RM_TRANSFERS.first);
@@ -838,47 +946,47 @@ cm:add_first_tick_callback(function()
                     rm:log("locking exchange button for reason ["..reason.."] ")
                     LockExchangeButton(reason, number_of_units_first, number_of_units_second)
                 end
+                --@changed block
             end, 0.1)
-            --@changed block
         end,
         true
     )
 
+    --changed block
     core:add_listener(
-        "RecruiterManagerOnExchangeOptionClicked",
-        "ComponentLClickUp",
-        function(context)
-            return not not string.find(context.string, "UnitCard") 
-        end,
-        function(context)
-            cm:remove_callback("RMTransferReval")
-            cm:callback(function()
-                    rm:log("refreshing army validity")
-                    --changed block
-                    local first_army, second_army = count_armies()
-                    local number_of_units_first, number_of_units_second = number_of_units(first_army), number_of_units(second_army);
-                    local char = cm:get_character_by_cqi(RM_TRANSFERS.first);
-                    local subculture_prefix = subculture_to_prefix[char:faction():subculture()];
-                    if not subculture_prefix then
-                        UnlockExchangeButton(number_of_units_first, number_of_units_second)
-                        return
-                     end
-                    local first_result = check_individual_army_validity(first_army, rm:get_character_by_cqi(RM_TRANSFERS.first), subculture_prefix)
-                    local second_result = check_individual_army_validity(second_army, rm:get_character_by_cqi(RM_TRANSFERS.second), subculture_prefix)
-                    addDisplayForFirstArmy(RM_TRANSFERS.first, first_result, subculture_prefix);
-                    addDisplayForSecondArmy(RM_TRANSFERS.second, second_result, subculture_prefix);
-                    local valid_armies, reason = are_armies_valid(first_result, second_result)
-                    if valid_armies then
-                        UnlockExchangeButton(number_of_units_first, number_of_units_second)
-                    else
-                        rm:log("locking exchange button for reason ["..reason.."] ")
-                        LockExchangeButton(reason, number_of_units_first, number_of_units_second)
-                    end
-                    --@changed block
-            end, 0.1, "RMTransferReval")
-        
-        end,
-        true);
+            "RecruiterManagerOnExchangeOptionClicked",
+            "ComponentLClickUp",
+            function(context)
+                local result = not not string.find(context.string, "UnitCard");
+                if result then
+                    local substring = string.gsub(context.string, "UnitCard", "");
+                    local index = tonumber(substring);
+                    indexes_to_update[index] = true
+                end
+                return result
+            end,
+            function(context)
+                onExchangeOptionClicked()
+            end,
+            true);
+
+    core:add_listener(
+            "RecruiterManagerOnExchangeAgentOptionClicked",
+            "ComponentLClickUp",
+            function(context)
+                local result = not not string.find(context.string, "Agent");
+                if result then
+                    local substring = string.gsub(context.string, "Agent ", "");
+                    local index = tonumber(substring);
+                    indexes_to_update[index] = true
+                end
+                return result
+            end,
+            function(context)
+                onExchangeOptionClicked()
+            end,
+            true);
+    --@changed block
 
 
     core:add_listener(
