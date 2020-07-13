@@ -689,10 +689,28 @@ function recruiter_manager.check_individual_unit_on_character(self, unitID,rec_c
                 if should_restrict or (not did_restrict) then
                     --if we should restrict, add a reason.
                     --If we have already restricted, and this is false, then we don't want to cancel that valid restriction.
-                    rec_char:set_unit_restriction(grouped_unit:key(),
-                        should_restrict,
-                        "This unit costs "..weight.." "..self:get_ui_name_for_group(groupID).." points, but this army only has "..tostring(restriction_quantity - group_count).." available."
-                    )
+                    --changed block
+                    local points_name = "очков"
+                    if weight == 1 then
+                        points_name = "очко"
+                    elseif weight == 2 then
+                        points_name = "очка"
+                    end
+                    local points_diff = restriction_quantity - group_count;
+                    local group_name = "элитных отрядов";
+                    if string.find(groupID, "special") then
+                        group_name = "особых отрядов"
+                    end
+                    if points_diff == 0 then
+                        rec_char:set_unit_restriction(grouped_unit:key(),
+                                should_restrict, "Это "..self:get_ui_name_for_group(groupID) .. " стоимостью " .. weight .. " " ..points_name .. " " .. group_name .. ", но у этой армии нет доступных очков " .. group_name .. "."
+                        )
+                    else
+                        rec_char:set_unit_restriction(grouped_unit:key(),
+                                should_restrict, "Это "..self:get_ui_name_for_group(groupID ) .. " стоимостью " .. weight .. " " ..points_name .. " " .. group_name .. ", но у этой армии доступно только "..tostring(points_diff) .. " очко " .. group_name .. "."
+                        )
+                    end
+                    --@changed block
                 end
             end
         end
@@ -750,10 +768,28 @@ function recruiter_manager.check_all_ui_recruitment_options(self, rec_char, ui_o
                 if should_restrict or (not did_restrict) then
                     --if we should restrict, add a reason.
                     --If we have already restricted, and this is false, then we don't want to cancel that valid restriction.
-                    rec_char:set_unit_restriction(grouped_unit:key(),
-                        should_restrict,
-                        "This unit costs "..weight.." "..self:get_ui_name_for_group(groupID).." points, but this army only has "..tostring(restriction_quantity - group_count).." available."
-                    )
+                    --changed block
+                    local points_name = "очков"
+                    if weight == 1 then
+                        points_name = "очко"
+                    elseif weight == 2 then
+                        points_name = "очка"
+                    end
+                    local points_diff = restriction_quantity - group_count;
+                    local group_name = "элитных отрядов";
+                    if string.find(groupID, "special") then
+                        group_name = "особых отрядов"
+                    end
+                    if points_diff == 0 then
+                        rec_char:set_unit_restriction(grouped_unit:key(),
+                                should_restrict, "Это "..self:get_ui_name_for_group(groupID) .. " стоимостью " .. weight .. " " ..points_name .. " " .. group_name .. ", но у этой армии нет доступных очков " .. group_name .. "."
+                        )
+                    else
+                        rec_char:set_unit_restriction(grouped_unit:key(),
+                                should_restrict, "Это "..self:get_ui_name_for_group(groupID ) .. " стоимостью " .. weight .. " " ..points_name .. " " .. group_name .. ", но у этой армии доступно только "..tostring(points_diff) .. " очко " .. group_name .. "."
+                        )
+                    end
+                    --@changed block
                 end
             end
         end
@@ -821,10 +857,28 @@ function recruiter_manager.remove_unit_from_character_queue_and_refresh_limits(s
                     end
                     if should_restrict or ((was_restricted and (not should_restrict))
                     and grouped_unit:key() == unitID and (not did_restrict)) then
-                        rec_char:set_unit_restriction(grouped_unit:key(),
-                            should_restrict,
-                            "This unit costs "..weight.." "..self:get_ui_name_for_group(groupID).." points, but this army only has "..tostring(restriction_quantity - new_count).." available."
-                        )
+                        --changed block
+                        local points_name = "очков"
+                        if weight == 1 then
+                            points_name = "очко"
+                        elseif weight == 2 then
+                            points_name = "очка"
+                        end
+                        local points_diff = restriction_quantity - new_count;
+                        local group_name = "элитных отрядов";
+                        if string.find(groupID, "special") then
+                            group_name = "особых отрядов"
+                        end
+                        if points_diff == 0 then
+                            rec_char:set_unit_restriction(grouped_unit:key(),
+                                    should_restrict, "Это "..self:get_ui_name_for_group(groupID) .. " стоимостью " .. weight .. " " ..points_name .. " " .. group_name .. ", но у этой армии нет доступных очков " .. group_name .. "."
+                            )
+                        else
+                            rec_char:set_unit_restriction(grouped_unit:key(),
+                                    should_restrict, "Это "..self:get_ui_name_for_group(groupID ) .. " стоимостью " .. weight .. " " ..points_name .. " " .. group_name .. ", но у этой армии доступно только "..tostring(points_diff) .. " очко " .. group_name .. "."
+                            )
+                        end
+                        --@changed block
                     end
                 end
             end
@@ -855,10 +909,28 @@ function recruiter_manager.add_unit_to_character_queue_and_refresh_limits(self, 
                     did_restrict = true
                 end
                 if should_restrict or (not did_restrict) then
-                    rec_char:set_unit_restriction(grouped_unit:key(),
-                        should_restrict,
-                        "This unit costs "..weight.." "..self:get_ui_name_for_group(groupID).." points, but this army only has "..tostring(restriction_quantity - new_count).." available."
-                    )
+                    --changed block
+                    local points_name = "очков"
+                    if weight == 1 then
+                        points_name = "очко"
+                    elseif weight == 2 then
+                        points_name = "очка"
+                    end
+                    local points_diff = restriction_quantity - new_count;
+                    local group_name = "элитных отрядов";
+                    if string.find(groupID, "special") then
+                        group_name = "особых отрядов"
+                    end
+                    if points_diff == 0 then
+                        rec_char:set_unit_restriction(grouped_unit:key(),
+                                should_restrict, "Это "..self:get_ui_name_for_group(groupID) .. " стоимостью " .. weight .. " " ..points_name .. " " .. group_name .. ", но у этой армии нет доступных очков " .. group_name .. "."
+                        )
+                    else
+                        rec_char:set_unit_restriction(grouped_unit:key(),
+                                should_restrict, "Это "..self:get_ui_name_for_group(groupID ) .. " стоимостью " .. weight .. " " ..points_name .. " " .. group_name .. ", но у этой армии доступно только "..tostring(points_diff) .. " очко " .. group_name .. "."
+                        )
+                    end
+                    --@changed block
                 end
             end
         end
