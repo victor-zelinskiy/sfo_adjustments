@@ -1,6 +1,37 @@
 cm = get_cm(); rm = _G.rm;
 local ast_line = "**********************************************************************\n"
 
+--copy paste from RecruitmentControlsMeter.lua
+local group_image_paths = {
+    ["special"] = {"ui/custom/recruitment_controls/special_units_1.png", "Special"},
+    ["rare"] = {"ui/custom/recruitment_controls/rare_units_1.png", "Rare"}
+}--:map<string, vector<string>>
+local prefix_to_subculture = {
+    bst = "wh_dlc03_sc_bst_beastmen",
+    wef = "wh_dlc05_sc_wef_wood_elves",
+    brt = "wh_main_sc_brt_bretonnia",
+    chs = "wh_main_sc_chs_chaos",
+    dwf = "wh_main_sc_dwf_dwarfs",
+    emp = "wh_main_sc_emp_empire",
+    grn = "wh_main_sc_grn_greenskins",
+    nor = "wh_main_sc_nor_norsca",
+    vmp = "wh_main_sc_vmp_vampire_counts",
+    tmb = "wh2_dlc09_sc_tmb_tomb_kings",
+    def = "wh2_main_sc_def_dark_elves",
+    hef = "wh2_main_sc_hef_high_elves",
+    lzd = "wh2_main_sc_lzd_lizardmen",
+    skv = "wh2_main_sc_skv_skaven",
+    cst = "wh2_dlc11_sc_cst_vampire_coast"
+}--:map<string, string>
+local subculture_to_prefix = {} --:map<string, string>
+for k, v in pairs(prefix_to_subculture) do
+    subculture_to_prefix[v] = k
+end
+subculture_to_prefix["wh_main_sc_teb_teb"] = "emp"
+subculture_to_prefix["wh_main_sc_ksl_kislev"] = "emp"
+subculture_to_prefix["wh_main_sc_grn_savage_orcs"] = "grn"
+--end copy paste
+
 cm:add_first_tick_callback(function()
     --add unit added to queue listener
     core:add_listener(
@@ -452,11 +483,13 @@ local function find_second_army()
     end
 end
 
+--changed block
 --v function(panel: string, index: number) --> (string, boolean)
 local function GetUnitNameInExchange(panel, index)
     local Panel = find_uicomponent(core:get_ui_root(), "unit_exchange", panel)
     if not not Panel then
         local armyUnit = find_uicomponent(Panel, "units", "UnitCard" .. index);
+        local agentUnit = find_uicomponent(Panel, "units", "Agent " .. index);
         if not not armyUnit then
             armyUnit:SimulateMouseOn();
             local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
@@ -471,38 +504,78 @@ local function GetUnitNameInExchange(panel, index)
                 is_transfered = transferArrow:Visible()
             end
             return armyUnitName, is_transfered
+        elseif not not agentUnit then
+            agentUnit:SimulateMouseOn();
+            local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
+            local rawstring = unitInfo:GetStateText();
+            local infostart = string.find(rawstring, "unit/") + 5;
+            local infoend = string.find(rawstring, "]]") - 1;
+            local armyUnitName = string.sub(rawstring, infostart, infoend)
+            local is_transfered = false --:boolean
+            local transferArrow = find_uicomponent(agentUnit, "exchange_arrow")
+            if not not transferArrow then
+                is_transfered = transferArrow:Visible()
+            end
+            return armyUnitName, is_transfered
         else
             return nil, false
         end
     end
     return nil, false
 end
+--@changed block
 
+--changed block
 --v function(reason: string)
-local function LockExchangeButton(reason)
+local function LockExchangeButton(reason, number_of_units_first, number_of_units_second)
     local ok_button = find_uicomponent(core:get_ui_root(), "unit_exchange", "hud_center_docker", "ok_cancel_buttongroup", "button_ok")
     if not not ok_button then
-        ok_button:SetInteractive(false)
-        ok_button:SetImagePath("ui/custom/recruitment_controls/fuckoffbutton.png")
+        if number_of_units_first > 20 or number_of_units_second > 20 then
+            ok_button:ShaderTechniqueSet('normal_t0', true, true)
+            ok_button:ShaderVarsSet(nil, nil, nil, nil, true, true)
+        else
+            ok_button:ShaderTechniqueSet('set_greyscale_t0', true, true)
+            ok_button:ShaderVarsSet(0.9, 1, nil, nil, true, true)
+        end
+        ok_button:SetDisabled(true)
+        if number_of_units_first > 20 then
+            ok_button:SetTooltipText("[[col:red]]Exchange is impossible: too many units in a single army! ("..tostring(number_of_units_first).."/20)[[/col]]", false)
+        elseif number_of_units_second > 20 then
+            ok_button:SetTooltipText("[[col:red]]Exchange is impossible: too many units in a single army! ("..tostring(number_of_units_second).."/20)[[/col]]", false)
+        else
+            ok_button:SetTooltipText(reason, false)
+        end
     else
         rm:log("ERROR: could not find the exchange ok button!")
     end
 end
+--@changed block
 
+--changed block
 --v function()
-local function UnlockExchangeButton()
+local function UnlockExchangeButton(number_of_units_first, number_of_units_second)
     local ok_button = find_uicomponent(core:get_ui_root(), "unit_exchange", "hud_center_docker", "ok_cancel_buttongroup", "button_ok")
     if not not ok_button then
-        ok_button:SetInteractive(true)
+        ok_button:SetDisabled(false)
+        if number_of_units_first > 20 then
+            ok_button:SetTooltipText("[[col:red]]Exchange is impossible: too many units in a single army! ("..tostring(number_of_units_first).."/20)[[/col]]", false)
+        elseif number_of_units_second > 20 then
+            ok_button:SetTooltipText("[[col:red]]Exchange is impossible: too many units in a single army! ("..tostring(number_of_units_second).."/20)[[/col]]", false)
+        else
+            ok_button:SetTooltipText('', false)
+        end
         ok_button:SetImagePath("ui/skins/default/icon_check.png")
+        ok_button:ShaderTechniqueSet('normal_t0', true, true)
+        ok_button:ShaderVarsSet(nil, nil, nil, nil, true, true)
     else
         rm:log("ERROR: could not find the exchange ok button!")
     end
 end
+--@changed block
 
-
+--changed block
 --v function(army_count: map<string, number>, rec_char: RECRUITER_CHARACTER) --> (boolean, string)
-local function check_individual_army_validity(army_count, rec_char)
+local function check_individual_army_validity(army_count, rec_char, subculture_prefix)
     local groups = {} --:map<string, number>
     for unit, count in pairs(army_count) do 
        local rec_unit = rm:get_unit(unit, rec_char)
@@ -511,26 +584,42 @@ local function check_individual_army_validity(army_count, rec_char)
        end
        --TODO implement individual unit caps.
     end
-    for groupID, count in pairs(groups) do
+
+    local result = {}
+    for suffix, _ in pairs(group_image_paths) do
+        local groupID = subculture_prefix.."_"..suffix
         local limit = rec_char:get_quantity_limit_for_group(groupID)
+        local count = (groups[groupID] or 0);
         if count > limit then
-            return false, "Too many "..rm:get_ui_name_for_group(groupID).." units in a single army! ("..count.."/"..limit..")"
+            table.insert(result, {groupID, count, limit, false, "[[col:red]]Exchange is impossible: too many "..rm:get_ui_name_for_group(groupID).." in a single army! ("..count.."/"..limit..")[[/col]]"})
+        else
+            table.insert(result, {groupID, count, limit, true, "valid"})
         end
     end
-    return true, "valid"
+    return result;
 end
+--@changed block
 
 
 
+--changed block
 --v function(first_army_count: map<string, number>, second_army_count:map<string, number>) --> (boolean, string)
-local function are_armies_valid(first_army_count, second_army_count)
-    local first_result, first_string = check_individual_army_validity(first_army_count, rm:get_character_by_cqi(RM_TRANSFERS.first))
-    if first_result == false then
-        return first_result, first_string
+local function are_armies_valid(first_army_result, second_army_result)
+    for i, record in pairs(first_army_result) do
+        if record[4] == false then
+            return false, record[5]
+        end
     end
-    local second_result, second_string = check_individual_army_validity(second_army_count, rm:get_character_by_cqi(RM_TRANSFERS.second))
-    return second_result, second_string
+
+    for i, record in pairs(second_army_result) do
+        if record[4] == false then
+            return false, record[5]
+        end
+    end
+
+    return true, "valid";
 end
+--@changed block
 
 --v function() --> (map<string, number>, map<string, number>)
 local function count_armies()
@@ -576,7 +665,146 @@ local function count_armies()
 end
 
 
+--changed block
+local function update_display(uic, rec_char, groupID, current_count)
 
+    local image = nil --:string
+    local name = nil --:string
+    for k,v in pairs(group_image_paths) do
+        if groupID:find(k) then
+            image = v[1]
+            name = v[2]
+            break
+        end
+    end
+    --changed block
+    cm:callback( function()
+        local cap = rec_char:get_quantity_limit_for_group(groupID)
+        if image then
+            uic:SetImagePath(image, 1)
+        end
+        if current_count and cap then
+            local result_count = cap - current_count
+            if (result_count < 0) then
+                uic:SetStateText("[[col:red]]" .. tostring(current_count) .. "/" .. tostring(cap) .. "[[/col]]")
+            else
+                uic:SetStateText(tostring(current_count) .. "/" .. tostring(cap))
+            end
+            uic:SetVisible(true)
+        end
+        local col = "dark_g"
+        if current_count >= cap then
+            col = "red"
+        end
+        if name and current_count and cap then
+            local tt_string = "You have used "..tostring(current_count).." of the "..tostring(cap).." "..name.." points available to this force! (Army Caps)"
+            uic:SetTooltipText(tt_string, true)
+        end
+    end, 0.2, "updateExcDisplayCallback")
+    --@changed block
+end
+
+
+
+local function addDisplayForFirstArmy(cqi, first_result, subculture_prefix)
+    for suffix, _ in pairs(group_image_paths) do
+        local rec_char = rm:get_character_by_cqi(cqi)
+        local groupID = subculture_prefix.."_"..suffix
+        local uicParent = find_uicomponent(core:get_ui_root(), "unit_exchange", "main_units_panel_1", "frame")
+        if uicParent then
+            local uic = find_uicomponent(uicParent, "rm_exc_display_first_"..groupID)
+            if not uic then
+                local uicSibling = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "icon_list", "rm_display_" .. groupID)
+                local new_uic = UIComponent(uicSibling:CopyComponent("rm_exc_display_first_"..groupID))
+                local pos_x, pos_y = uicParent:Position();
+                if string.find(suffix, 'rare') then
+                    new_uic:MoveTo(pos_x - 151, pos_y)
+                else
+                    new_uic:MoveTo(pos_x - 87, pos_y)
+                end
+                uicParent:Adopt(new_uic:Address());
+                local current_count = 0;
+                for i, record in pairs(first_result) do
+                    if (record[1] == groupID) then
+                        current_count = record[2]
+                    end
+                end
+                update_display(new_uic, rec_char, groupID, current_count)
+            else
+                local pos_x, pos_y = uicParent:Position();
+                if string.find(suffix, 'rare') then
+                    uic:MoveTo(pos_x - 151, pos_y)
+                else
+                    uic:MoveTo(pos_x - 87, pos_y)
+                end
+                local current_count = 0;
+                for i, record in pairs(first_result) do
+                    if (record[1] == groupID) then
+                        current_count = record[2]
+                    end
+                end
+                update_display(uic, rec_char, groupID, current_count)
+            end
+        end
+    end
+end
+
+local function addDisplayForSecondArmy(cqi, second_result)
+    for suffix, _ in pairs(group_image_paths) do
+        local char = cm:get_character_by_cqi(cqi);
+        local rec_char = rm:get_character_by_cqi(cqi)
+        local subculture_prefix = subculture_to_prefix[char:faction():subculture()];
+        if not subculture_prefix then
+            return
+        end
+        local groupID = subculture_prefix.."_"..suffix
+        local uicParent = find_uicomponent(core:get_ui_root(), "unit_exchange", "main_units_panel_2", "frame")
+        if uicParent then
+            local uic = find_uicomponent(uicParent, "rm_exc_display_second_"..groupID)
+            if not uic then
+                local uicSibling = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "icon_list", "rm_display_" .. groupID)
+                local new_uic = UIComponent(uicSibling:CopyComponent("rm_exc_display_second_"..groupID))
+                local pos_x, pos_y = uicParent:Position();
+                if string.find(suffix, 'rare') then
+                    new_uic:MoveTo(pos_x - 156, pos_y + 10)
+                else
+                    new_uic:MoveTo(pos_x - 91, pos_y + 10)
+                end
+                uicParent:Adopt(new_uic:Address());
+                local current_count = 0;
+                for i, record in pairs(second_result) do
+                    if (record[1] == groupID) then
+                        current_count = record[2]
+                    end
+                end
+                update_display(new_uic, rec_char, groupID, current_count)
+            else
+                local pos_x, pos_y = uicParent:Position();
+                if string.find(suffix, 'rare') then
+                    uic:MoveTo(pos_x - 156, pos_y + 10)
+                else
+                    uic:MoveTo(pos_x - 91, pos_y + 10)
+                end
+                local current_count = 0;
+                for i, record in pairs(second_result) do
+                    if (record[1] == groupID) then
+                        current_count = record[2]
+                    end
+                end
+                update_display(uic, rec_char, groupID, current_count)
+            end
+        end
+    end
+end
+
+local function number_of_units(army)
+    local total_count = 0;
+    for unit, count in pairs(army) do
+        total_count = total_count + count;
+    end
+    return total_count;
+end
+--@changed block
 
 cm:add_first_tick_callback(function()
     core:add_listener(
@@ -590,15 +818,28 @@ cm:add_first_tick_callback(function()
                 -- print_all_uicomponent_children(find_uicomponent(core:get_ui_root(), "unit_exchange"))
                 RM_TRANSFERS.first = rm._UICurrentCharacter
                 RM_TRANSFERS.second = find_second_army()
+                --changed block
                 local first_army, second_army = count_armies()
-                local valid_armies, reason = are_armies_valid(first_army, second_army)
+                local number_of_units_first, number_of_units_second = number_of_units(first_army), number_of_units(second_army);
+                local char = cm:get_character_by_cqi(RM_TRANSFERS.first);
+                local subculture_prefix = subculture_to_prefix[char:faction():subculture()];
+                if not subculture_prefix then
+                    UnlockExchangeButton(number_of_units_first, number_of_units_second)
+                    return
+                end
+                local first_result = check_individual_army_validity(first_army, rm:get_character_by_cqi(RM_TRANSFERS.first), subculture_prefix)
+                local second_result = check_individual_army_validity(second_army, rm:get_character_by_cqi(RM_TRANSFERS.second), subculture_prefix)
+                addDisplayForFirstArmy(RM_TRANSFERS.first, first_result, subculture_prefix);
+                addDisplayForSecondArmy(RM_TRANSFERS.second, second_result, subculture_prefix);
+                local valid_armies, reason = are_armies_valid(first_result, second_result)
                 if valid_armies then
-                    UnlockExchangeButton()
+                    UnlockExchangeButton(number_of_units_first, number_of_units_second)
                 else
                     rm:log("locking exchange button for reason ["..reason.."] ")
-                    LockExchangeButton(reason)
+                    LockExchangeButton(reason, number_of_units_first, number_of_units_second)
                 end
             end, 0.1)
+            --@changed block
         end,
         true
     )
@@ -613,14 +854,27 @@ cm:add_first_tick_callback(function()
             cm:remove_callback("RMTransferReval")
             cm:callback(function()
                     rm:log("refreshing army validity")
+                    --changed block
                     local first_army, second_army = count_armies()
-                    local valid_armies, reason = are_armies_valid(first_army, second_army)
+                    local number_of_units_first, number_of_units_second = number_of_units(first_army), number_of_units(second_army);
+                    local char = cm:get_character_by_cqi(RM_TRANSFERS.first);
+                    local subculture_prefix = subculture_to_prefix[char:faction():subculture()];
+                    if not subculture_prefix then
+                        UnlockExchangeButton(number_of_units_first, number_of_units_second)
+                        return
+                     end
+                    local first_result = check_individual_army_validity(first_army, rm:get_character_by_cqi(RM_TRANSFERS.first), subculture_prefix)
+                    local second_result = check_individual_army_validity(second_army, rm:get_character_by_cqi(RM_TRANSFERS.second), subculture_prefix)
+                    addDisplayForFirstArmy(RM_TRANSFERS.first, first_result, subculture_prefix);
+                    addDisplayForSecondArmy(RM_TRANSFERS.second, second_result, subculture_prefix);
+                    local valid_armies, reason = are_armies_valid(first_result, second_result)
                     if valid_armies then
-                        UnlockExchangeButton()
+                        UnlockExchangeButton(number_of_units_first, number_of_units_second)
                     else
                         rm:log("locking exchange button for reason ["..reason.."] ")
-                        LockExchangeButton(reason)
+                        LockExchangeButton(reason, number_of_units_first, number_of_units_second)
                     end
+                    --@changed block
             end, 0.1, "RMTransferReval")
         
         end,

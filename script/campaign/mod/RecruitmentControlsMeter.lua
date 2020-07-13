@@ -62,7 +62,7 @@ local function update_display(uic, rec_char, groupID)
             uic:SetImagePath(image, 1)
         end
         if current_count and cap then
-            uic:SetStateText(tostring(cap - current_count))
+            uic:SetStateText(tostring(current_count) .. "/" .. tostring(cap)) --changed line
             uic:SetVisible(true)
         end
         local col = "dark_g"
