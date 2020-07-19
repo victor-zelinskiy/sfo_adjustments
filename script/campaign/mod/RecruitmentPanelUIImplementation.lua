@@ -59,26 +59,104 @@ local indexes_to_update = {
     false, --20
 }
 
-local function CacheUnitNameInExchange(panel, index)
+local function CacheUnitNameInExchange(panel, index, char_cqi)
     local Panel = find_uicomponent(core:get_ui_root(), "unit_exchange", panel)
+    local subculture_prefix
+    local char
+    if char_cqi ~= nil then
+        char = cm:get_character_by_cqi(char_cqi);
+        subculture_prefix = subculture_to_prefix[char:faction():subculture()]
+    end
     if not not Panel then
         local armyUnit = find_uicomponent(Panel, "units", "UnitCard" .. index);
         if not not armyUnit then
             if exchange_armies_cache[panel] == nil then
                 exchange_armies_cache[panel] = {}
             end
-            armyUnit:SimulateMouseOn();
-            local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
-            local rawstring = unitInfo:GetStateText();
-            local infostart = string.find(rawstring, "unit/") + 5;
-            local infoend = string.find(rawstring, "]]") - 1;
-            local armyUnitName = string.sub(rawstring, infostart, infoend)
+
+            local armyUnitName;
+            local i = index - 1;
+            if char ~= nil and i < char:military_force():unit_list():num_items() then
+                local unit_list = char:military_force():unit_list();
+                local unit_from_list = unit_list:item_at(i);
+                armyUnitName = unit_from_list:unit_key();
+            else
+                armyUnit:SimulateMouseOn();
+                local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
+                local rawstring = unitInfo:GetStateText();
+                local infostart = string.find(rawstring, "unit/") + 5;
+                local infoend = string.find(rawstring, "]]") - 1;
+                armyUnitName = string.sub(rawstring, infostart, infoend)
+                armyUnit:SimulateMouseOff()
+            end
+
+            --add icon
+            local x, y = armyUnit:Position()
+            if not not subculture_prefix then
+                if char_cqi ~= nil then
+                    local rm_char = rm:get_character_by_cqi(char_cqi)
+                    if rm_char ~= nil then
+                        if not not armyUnitName then
+                            local unit = rm:get_unit(armyUnitName, rm_char)
+                            if not not unit then
+                                local uicParent = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "icon_list")
+                                if not not uicParent then
+                                    local uicSibling = find_uicomponent(uicParent, "dy_upkeep")
+                                    if not not uicSibling then
+                                        local icon_name = subculture_prefix .. '_rm_cost_icon_' .. tostring(index)
+                                        local icon = find_uicomponent(core:get_ui_root(), "unit_exchange", panel, icon_name)
+                                        local icon_path = unit._UIPip;
+                                        if not icon then
+                                            if not not icon_path then
+                                                local newIcon = UIComponent(uicSibling:CopyComponent(icon_name))
+                                                Panel:Adopt(newIcon:Address())
+                                                newIcon:SetVisible(true)
+                                                newIcon:SetImagePath(icon_path, 0)
+                                                newIcon:SetImagePath(icon_path, 1)
+                                                newIcon:SetCurrentStateImageOpacity(0, 0)
+                                                newIcon:SetStateText('')
+                                                newIcon:SetCanResizeHeight(true)
+                                                newIcon:SetCanResizeWidth(true)
+                                                newIcon:Resize(30, 30)
+                                                newIcon:SetCanResizeHeight(false)
+                                                newIcon:SetCanResizeWidth(false)
+                                                newIcon:MoveTo(x + 32, y + 17)
+                                                local ui_text = unit._UIText;
+                                                if not not ui_text then
+                                                    newIcon:SetTooltipText(ui_text, true)
+                                                else
+                                                    newIcon:SetTooltipText('', true)
+                                                end
+                                            end
+                                        else
+                                            if not not icon_path then
+                                                icon:SetVisible(true)
+                                                icon:SetImagePath(icon_path, 1)
+                                                icon:MoveTo(x + 32, y + 17)
+                                                local ui_text = unit._UIText;
+                                                if not not ui_text then
+                                                    icon:SetTooltipText(ui_text, true)
+                                                else
+                                                    icon:SetTooltipText('', true)
+                                                end
+                                            else
+                                                icon:SetVisible(false)
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            --@add icon
+
             local is_transfered = false
             local transferArrow = find_uicomponent(armyUnit, "exchange_arrow")
             if not not transferArrow then
                 is_transfered = transferArrow:Visible()
             end
-            armyUnit:SimulateMouseOff()
             exchange_armies_cache[panel][index] = {armyUnitName, is_transfered};
         else
             local agentUnit = find_uicomponent(Panel, "units", "Agent " .. index);
@@ -86,18 +164,26 @@ local function CacheUnitNameInExchange(panel, index)
                 if exchange_armies_cache[panel] == nil then
                     exchange_armies_cache[panel] = {}
                 end
-                agentUnit:SimulateMouseOn();
-                local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
-                local rawstring = unitInfo:GetStateText();
-                local infostart = string.find(rawstring, "unit/") + 5;
-                local infoend = string.find(rawstring, "]]") - 1;
-                local armyUnitName = string.sub(rawstring, infostart, infoend)
+                local armyUnitName;
+                local i = index - 1;
+                if char ~= nil and i < char:military_force():unit_list():num_items() then
+                    local unit_list = char:military_force():unit_list();
+                    local unit_from_list = unit_list:item_at(i);
+                    armyUnitName = unit_from_list:unit_key();
+                else
+                    agentUnit:SimulateMouseOn();
+                    local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
+                    local rawstring = unitInfo:GetStateText();
+                    local infostart = string.find(rawstring, "unit/") + 5;
+                    local infoend = string.find(rawstring, "]]") - 1;
+                    armyUnitName = string.sub(rawstring, infostart, infoend)
+                    agentUnit:SimulateMouseOff()
+                end
                 local is_transfered = false
                 local transferArrow = find_uicomponent(agentUnit, "exchange_arrow")
                 if not not transferArrow then
                     is_transfered = transferArrow:Visible()
                 end
-                agentUnit:SimulateMouseOff()
                 exchange_armies_cache[panel][index] = {armyUnitName, is_transfered};
             end
         end
@@ -105,16 +191,168 @@ local function CacheUnitNameInExchange(panel, index)
 end
 
 
-local function cache_armies()
+local function cache_armies(char_cqi, second_char_cqi)
+    local subculture_prefix
+    local char
+    if char_cqi ~= nil then
+        char = cm:get_character_by_cqi(char_cqi);
+        subculture_prefix = subculture_to_prefix[char:faction():subculture()]
+    end
+
+    if not not subculture_prefix then
+        for i = 1, 20 do
+            local icon_name = subculture_prefix .. '_rm_cost_icon_' .. tostring(i)
+            local icon1 = find_uicomponent(core:get_ui_root(), "unit_exchange", "main_units_panel_1", icon_name)
+            local icon2 = find_uicomponent(core:get_ui_root(), "unit_exchange", "main_units_panel_2", icon_name)
+            if not not icon1 then
+                icon1:SetVisible(false)
+            end
+            if not not icon2 then
+                icon2:SetVisible(false)
+            end
+        end
+    end
+
     for i = 1, 20 do
-        CacheUnitNameInExchange("main_units_panel_1", i)
-        CacheUnitNameInExchange("main_units_panel_2", i)
+        CacheUnitNameInExchange("main_units_panel_1", i, char_cqi)
+        CacheUnitNameInExchange("main_units_panel_2", i, second_char_cqi)
     end
 end
 
 local function update_cache(index)
     CacheUnitNameInExchange("main_units_panel_1", index)
     CacheUnitNameInExchange("main_units_panel_2", index)
+end
+
+
+local function onCharacterSelected(character, parentEvent)
+    local subculture_prefix = subculture_to_prefix[character:faction():subculture()]
+    if character:has_military_force() then
+        --# assume character: CA_CHAR
+        --tell RM which character is selected. This is core to the entire system.
+        local char_cqi = character:command_queue_index()
+        local current_character, was_created = rm:set_current_character(char_cqi)
+        local unit_list = character:military_force():unit_list();
+        local num_items = unit_list:num_items();
+        local queueNum = current_character._queueNum
+        local sum = num_items + queueNum
+        for i = 0, 19 do
+            if i >= sum then
+                local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                if not not icon then
+                    icon:SetVisible(false)
+                end
+            end
+        end
+
+        cm:callback(function()
+            --changed block
+            --add icons
+            local panel = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel");
+            local uic_units = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "units");
+
+            if not not panel then
+                if not not uic_units then
+                    for i = 0, uic_units:ChildCount() - 1 do
+                        local unitComponent = UIComponent(uic_units:Find(i));
+                        local armyUnitName;
+                        if i < num_items then
+                            local unit_from_list = unit_list:item_at(i);
+                            armyUnitName = unit_from_list:unit_key();
+                        else
+                            unitComponent:SimulateMouseOn();
+                            local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
+                            local rawstring = unitInfo:GetStateText();
+                            local infostart = string.find(rawstring, "unit/") + 5;
+                            local infoend = string.find(rawstring, "]]") - 1;
+                            armyUnitName = string.sub(rawstring, infostart, infoend)
+                            unitComponent:SimulateMouseOff();
+                        end
+                        local x, y = unitComponent:Position()
+                        if not not subculture_prefix then
+                            if char_cqi ~= nil then
+                                if not not armyUnitName then
+                                    local unit = rm:get_unit(armyUnitName, current_character)
+                                    if not not unit then
+                                        local uicParent = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "icon_list")
+                                        if not not uicParent then
+                                            local uicSibling = find_uicomponent(uicParent, "dy_upkeep")
+                                            if not not uicSibling then
+                                                local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                                                local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                                                local icon_path = unit._UIPip;
+                                                if not icon then
+                                                    if not not icon_path then
+                                                        local newIcon = UIComponent(uicSibling:CopyComponent(icon_name))
+                                                        panel:Adopt(newIcon:Address())
+                                                        newIcon:SetVisible(true)
+                                                        newIcon:SetImagePath(icon_path, 0)
+                                                        newIcon:SetImagePath(icon_path, 1)
+                                                        newIcon:SetCurrentStateImageOpacity(0, 0)
+                                                        newIcon:SetStateText('')
+                                                        newIcon:SetCanResizeHeight(true)
+                                                        newIcon:SetCanResizeWidth(true)
+                                                        newIcon:Resize(30, 30)
+                                                        newIcon:SetCanResizeHeight(false)
+                                                        newIcon:SetCanResizeWidth(false)
+                                                        local final_x = x + 32
+                                                        local final_y = y + 17
+                                                        newIcon:MoveTo(final_x, final_y)
+                                                        local ui_text = unit._UIText;
+                                                        if not not ui_text then
+                                                            newIcon:SetTooltipText(ui_text, true)
+                                                        else
+                                                            newIcon:SetTooltipText('', true)
+                                                        end
+                                                    end
+                                                else
+                                                    if not not icon_path then
+                                                        icon:SetVisible(true)
+                                                        icon:SetImagePath(icon_path, 1)
+                                                        local final_x = x + 32
+                                                        local final_y = y + 17
+                                                        icon:MoveTo(final_x, final_y)
+                                                        local ui_text = unit._UIText;
+                                                        if not not ui_text then
+                                                            icon:SetTooltipText(ui_text, true)
+                                                        else
+                                                            icon:SetTooltipText('', true)
+                                                        end
+                                                    else
+                                                        icon:SetVisible(false)
+                                                    end
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            --@add icons
+            if parentEvent == 'RecruiterManagerOkButtonListener' or parentEvent == 'UnitMergedAndDestroyed' then
+                current_character:set_army_stale()
+                rm:check_all_units_on_character(current_character)
+                rm:enforce_all_units_on_current_character()
+                core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+            elseif parentEvent == 'CharacterSelected' or parentEvent == 'RecruiterManagerPanelClosedMercenaries' then
+                rm:check_all_units_on_character(current_character)
+                rm:enforce_all_units_on_current_character()
+                core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+            end
+        end, 0.1)
+    else
+        for i = 0, 19 do
+            local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+            local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+            if not not icon then
+                icon:SetVisible(false)
+            end
+        end
+    end
 end
 --@changed block
 
@@ -136,10 +374,15 @@ cm:add_first_tick_callback(function()
                 --reduce the string to get the name of the unit.
                 local unitID = string.gsub(unit_component_ID, "_recruitable", "")
                 --add the unit to queue so that our model knows it exists.
-                rm:add_unit_to_character_queue_and_refresh_limits(unitID, rm:current_character())
-                rm:enforce_unit_and_grouped_units(unitID, rm:current_character())
-                rm:output_state(rm:current_character())
-                core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+                local current_character = rm:current_character();
+                rm:add_unit_to_character_queue_and_refresh_limits(unitID, current_character)
+                rm:enforce_unit_and_grouped_units(unitID, current_character)
+                rm:output_state(current_character)
+                local cm_char = cm:get_character_by_cqi(current_character:command_queue_index());
+                core:trigger_event("RecruiterManagerGroupCountUpdated", cm_char)
+                cm:callback( function()
+                    onCharacterSelected(cm_char, 'RecruiterManagerOnRecruitOptionClicked')
+                end, 0.1)
             end
         end,
         true);
@@ -159,10 +402,15 @@ cm:add_first_tick_callback(function()
                 --reduce the string to get the name of the unit.
                 local unitID = string.gsub(unit_component_ID, "_mercenary", "")
                 --add the unit to queue so that our model knows it exists.
-                rm:add_unit_to_character_queue_and_refresh_limits(unitID, rm:current_character(), true)
-                rm:enforce_unit_and_grouped_units(unitID, rm:current_character())
-                rm:output_state(rm:current_character())
-                core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+                local current_character = rm:current_character();
+                rm:add_unit_to_character_queue_and_refresh_limits(unitID, current_character, true)
+                rm:enforce_unit_and_grouped_units(unitID, current_character)
+                rm:output_state(current_character)
+                local cm_char = cm:get_character_by_cqi(current_character:command_queue_index());
+                core:trigger_event("RecruiterManagerGroupCountUpdated", cm_char)
+                cm:callback( function()
+                    onCharacterSelected(cm_char, 'RecruiterManagerOnMercenaryOptionClicked')
+                end, 0.1)
             end
         end,
         true);
@@ -220,6 +468,11 @@ cm:add_first_tick_callback(function()
                     core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
                 end, 0.1, "RMOnQueue")
             end
+            cm:remove_callback("RMOnQueueOnCharacterSelected")
+            cm:callback( function()
+                local char_cqi = current_character:command_queue_index()
+                onCharacterSelected(cm:get_character_by_cqi(char_cqi), "RecruiterManagerOnQueuedUnitClicked")
+            end, 0.1, "RMOnQueueOnCharacterSelected")
         end
     end,
     true);
@@ -247,6 +500,11 @@ cm:add_first_tick_callback(function()
             rm:enforce_unit_and_grouped_units(unitID, rm:current_character())
             rm:output_state(current_character) -- will only fire when logging is enabled.
             core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+            cm:remove_callback("RMOnQueueMercOnCharacterSelected")
+            cm:callback( function()
+                local char_cqi = current_character:command_queue_index()
+                onCharacterSelected(cm:get_character_by_cqi(char_cqi), "RecruiterManagerOnQueuedMercenaryClicked")
+            end, 0.1, "RMOnQueueMercOnCharacterSelected")
         end
     end,
     true);
@@ -296,13 +554,14 @@ cm:add_first_tick_callback(function()
     end,
     function(context)
         local unit = context:unit()
-        --# assume unit: CA_UNIT
-        local char_cqi = unit:force_commander():command_queue_index();
-        rm:log("Player faction recruited a unit!")
-        local rec_char = rm:get_character_by_cqi(char_cqi)
-        rec_char:set_army_stale()
-        rec_char:clear_mercenary_queue(false)
-        rm:get_character_by_cqi(char_cqi):set_queue_stale()
+        cm:callback(function()
+            local char_cqi = unit:force_commander():command_queue_index();
+            onCharacterSelected(cm:get_character_by_cqi(char_cqi), "UnitTrained")
+            local rec_char = rm:get_character_by_cqi(char_cqi)
+            rec_char:set_army_stale()
+            rec_char:clear_mercenary_queue(false)
+            rm:get_character_by_cqi(char_cqi):set_queue_stale()
+        end, 0.1)
     end,
     true)
 
@@ -311,21 +570,12 @@ cm:add_first_tick_callback(function()
         "RecruiterManagerOnCharacterSelected",
         "CharacterSelected",
         function(context)
-        return context:character():faction():is_human() and context:character():has_military_force()
+        return context:character():faction():is_human()
         end,
         function(context)
             rm:log("Human Character Selected by player!")
             local character = context:character()
-            --# assume character: CA_CHAR
-            --tell RM which character is selected. This is core to the entire system.
-            local current_character, was_created = rm:set_current_character(character:command_queue_index()) 
-            cm:callback(function()
-                --changed block
-                rm:check_all_units_on_character(current_character)
-                rm:enforce_all_units_on_current_character()
-                --@changed block
-                core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
-            end, 0.1)
+            onCharacterSelected(character, "CharacterSelected")
         end,
         true)
     --add recruit panel open listener
@@ -409,11 +659,8 @@ cm:add_first_tick_callback(function()
                 cm:callback(function()
                     local current_character = rm:current_character()
                     if current_character ~= nil then
-                        current_character:set_army_stale()
-                        rm:check_all_units_on_character(current_character)
-                        rm:enforce_all_units_on_current_character()
-                        rm:output_state(current_character)
-                        core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+                        local char_cqi = current_character:command_queue_index()
+                        onCharacterSelected(cm:get_character_by_cqi(char_cqi), "RecruiterManagerOkButtonListener")
                     end
                 end, 0.1)
             end,
@@ -476,7 +723,12 @@ cm:add_first_tick_callback(function()
             return context.string == "mercenary_recruitment"; 
         end,
         function(context)
-            rm:current_character():clear_mercenary_queue(false)
+            local current_character = rm:current_character()
+            current_character:clear_mercenary_queue(false)
+            cm:callback( function()
+                local char_cqi = current_character:command_queue_index()
+                onCharacterSelected(cm:get_character_by_cqi(char_cqi), "RecruiterManagerPanelClosedMercenaries")
+            end, 0.1)
         end,
         true
     )
@@ -514,16 +766,10 @@ cm:add_first_tick_callback(function()
             return context:new_unit():faction():is_human() and rm:has_character(context:new_unit():force_commander():command_queue_index())
         end,
         function(context)
-            local unit = context:new_unit():unit_key() --:string
-            local cqi = context:new_unit():force_commander():command_queue_index() --:CA_CQI
-            --there is a lot of possibilies when a merge has happened
-            --to be safe, we just set the army stale. 
-            rm:get_character_by_cqi(cqi):set_army_stale()
-            cm:remove_callback("RMMergeDestroy")
+            local cqi = context:new_unit():force_commander():command_queue_index()
             cm:callback(function()
-                rm:check_all_units_on_character(rm:get_character_by_cqi(cqi))
-                rm:output_state(rm:current_character())
-            end, 0.2, "RMMergeDestroy")
+                onCharacterSelected(cm:get_character_by_cqi(cqi), "UnitMergedAndDestroyed")
+            end, 0.1)
         end,
         true)
 end)
@@ -792,21 +1038,23 @@ local function addDisplayForFirstArmy(cqi, first_result, subculture_prefix)
             local uic = find_uicomponent(uicParent, "rm_exc_display_first_"..groupID)
             if not uic then
                 local uicSibling = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "icon_list", "rm_display_" .. groupID)
-                local new_uic = UIComponent(uicSibling:CopyComponent("rm_exc_display_first_"..groupID))
-                local pos_x, pos_y = uicParent:Position();
-                if string.find(suffix, 'rare') then
-                    new_uic:MoveTo(pos_x - 151, pos_y)
-                else
-                    new_uic:MoveTo(pos_x - 87, pos_y)
-                end
-                uicParent:Adopt(new_uic:Address());
-                local current_count = 0;
-                for i, record in pairs(first_result) do
-                    if (record[1] == groupID) then
-                        current_count = record[2]
+                if not not uicSibling then
+                    local new_uic = UIComponent(uicSibling:CopyComponent("rm_exc_display_first_"..groupID))
+                    local pos_x, pos_y = uicParent:Position();
+                    if string.find(suffix, 'rare') then
+                        new_uic:MoveTo(pos_x - 151, pos_y)
+                    else
+                        new_uic:MoveTo(pos_x - 87, pos_y)
                     end
+                    uicParent:Adopt(new_uic:Address());
+                    local current_count = 0;
+                    for i, record in pairs(first_result) do
+                        if (record[1] == groupID) then
+                            current_count = record[2]
+                        end
+                    end
+                    update_display(new_uic, rec_char, groupID, current_count)
                 end
-                update_display(new_uic, rec_char, groupID, current_count)
             else
                 local pos_x, pos_y = uicParent:Position();
                 if string.find(suffix, 'rare') then
@@ -926,7 +1174,7 @@ cm:add_first_tick_callback(function()
                 RM_TRANSFERS.first = rm._UICurrentCharacter
                 RM_TRANSFERS.second = find_second_army()
                 --changed block
-                cache_armies()
+                cache_armies(RM_TRANSFERS.first, RM_TRANSFERS.second)
                 local first_army, second_army = count_armies()
                 local number_of_units_first, number_of_units_second = number_of_units(first_army), number_of_units(second_army);
                 local char = cm:get_character_by_cqi(RM_TRANSFERS.first);
