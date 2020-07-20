@@ -915,7 +915,7 @@ local units = {
         {"wh2_dlc09_tmb_mon_carrion_ror", "tmb_special", 1},
         {"wh2_dlc09_tmb_cav_necropolis_knights_ror", "tmb_special", 1},
         {"wh2_dlc09_tmb_cav_nehekhara_horsemen_ror", "tmb_special", 1},
-        {"wh2_dlc09_tmb_inf_nehekhara_warriors_ror", "tmb_tmb_special", 1},
+        {"wh2_dlc09_tmb_inf_nehekhara_warriors_ror", "tmb_special", 1},
         
         -------ROR-------
         --SPECIAL
