@@ -59,6 +59,8 @@ local indexes_to_update = {
     false, --20
 }
 
+local created_icons = {}
+
 local function CacheUnitNameInExchange(panel, index, char_cqi)
     local Panel = find_uicomponent(core:get_ui_root(), "unit_exchange", panel)
     local subculture_prefix
@@ -227,7 +229,7 @@ end
 
 local function onCharacterSelected(character, parentEvent)
     local subculture_prefix = subculture_to_prefix[character:faction():subculture()]
-    if character:has_military_force() then
+    if character:has_military_force() and character:faction():is_human() then
         --# assume character: CA_CHAR
         --tell RM which character is selected. This is core to the entire system.
         local char_cqi = character:command_queue_index()
@@ -305,6 +307,7 @@ local function onCharacterSelected(character, parentEvent)
                                                         else
                                                             newIcon:SetTooltipText('', true)
                                                         end
+                                                        table.insert(created_icons, newIcon)
                                                     end
                                                 else
                                                     if not not icon_path then
@@ -345,11 +348,10 @@ local function onCharacterSelected(character, parentEvent)
             end
         end, 0.1)
     else
-        for i = 0, 19 do
-            local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
-            local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
-            if not not icon then
-                icon:SetVisible(false)
+        for i = 1, #created_icons do
+            local created_icon = created_icons[i]
+            if not not created_icon then
+                created_icon:SetVisible(false)
             end
         end
     end
@@ -569,9 +571,7 @@ cm:add_first_tick_callback(function()
     core:add_listener(
         "RecruiterManagerOnCharacterSelected",
         "CharacterSelected",
-        function(context)
-        return context:character():faction():is_human()
-        end,
+        true,
         function(context)
             rm:log("Human Character Selected by player!")
             local character = context:character()
