@@ -229,7 +229,7 @@ end
 
 local function onCharacterSelected(character, parentEvent)
     local subculture_prefix = subculture_to_prefix[character:faction():subculture()]
-    if character:has_military_force() and character:faction():is_human() then
+    if character:has_military_force() and character:faction():is_human() and character:faction():name() == cm:get_local_faction(true) then
         --# assume character: CA_CHAR
         --tell RM which character is selected. This is core to the entire system.
         local char_cqi = character:command_queue_index()
@@ -348,12 +348,25 @@ local function onCharacterSelected(character, parentEvent)
             end
         end, 0.1)
     else
-        for i = 1, #created_icons do
-            local created_icon = created_icons[i]
-            if not not created_icon then
-                created_icon:SetVisible(false)
+        cm:callback( function()
+            local panel = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel");
+            if not not panel then
+                local local_faction = cm:get_local_faction(true);
+                if not not local_faction then
+                    local cm_local_faction = cm:get_faction(local_faction)
+                    if not not cm_local_faction then
+                        local local_subculture_prefix = subculture_to_prefix[cm_local_faction:subculture()]
+                        for i = 0, 19 do
+                            local icon_name = local_subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                            local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                            if not not icon then
+                                icon:SetVisible(false)
+                            end
+                        end
+                    end
+                end;
             end
-        end
+        end, 0.1)
     end
 end
 --@changed block

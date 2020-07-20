@@ -9,7 +9,7 @@ local group_image_paths = {
     ["rare"] = {"ui/custom/recruitment_controls/rare_units_1.png", "Rare"}
 }--:map<string, vector<string>>
 
-local created_uic = {} --:vector<string>
+local created_uic = {} --:map<string, boolean> --changed line
 
 local prefix_to_subculture = {
     bst = "wh_dlc03_sc_bst_beastmen",
@@ -62,8 +62,10 @@ local function update_display(uic, rec_char, groupID)
             uic:SetImagePath(image, 1)
         end
         if current_count and cap then
-            uic:SetStateText(tostring(current_count) .. "/" .. tostring(cap)) --changed line
+            uic:SetStateText(tostring(current_count) .. "/" .. tostring(cap))
             uic:SetVisible(true)
+        else
+            uic:SetVisible(false)
         end
         local col = "dark_g"
         if current_count >= cap then
@@ -98,8 +100,12 @@ core:add_listener(
                 if not uic then
                     local uicSibling = find_uicomponent(uicParent, "dy_upkeep")
                     if uicSibling then
-                        local new_uic = UIComponent(uicSibling:CopyComponent("rm_display_"..groupID))
-                        created_uic[#created_uic+1] = "rm_display_"..groupID
+                        --changed block
+                        local key = "rm_display_"..groupID
+                        local new_uic = UIComponent(uicSibling:CopyComponent(key))
+                        new_uic:SetVisible(false)
+                        created_uic[key] = true
+                        --@changed block
                         --[[local header_bar = find_uicomponent(core:get_ui_root(),"units_panel", "main_units_panel", "header")
                         if header_bar then
                             local current_x, current_y = header_bar:Position()
@@ -138,6 +144,8 @@ core:add_listener(
     true
 )
 
+
+--changed block
 core:add_listener(
     "CharacterSelectedMonitorUI",
     "CharacterSelected",
@@ -146,10 +154,10 @@ core:add_listener(
     end,
     function(context)
         cm:callback(function()
-            for i = 1, #created_uic do
-                local uicParent = find_uicomponent(core:get_ui_root(),"units_panel", "main_units_panel", "icon_list")
+            for key, value in pairs(created_uic) do
+                local uicParent = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "icon_list")
                 if uicParent then
-                    local uic = find_uicomponent(uicParent, created_uic[i])
+                    local uic = find_uicomponent(uicParent, key)
                     if uic then
                         uic:SetVisible(false)
                     end
@@ -158,6 +166,7 @@ core:add_listener(
         end, 0.1)
     end,
     true)
+--@changed block
 
 core:add_listener(
     "RefreshCharacterHack",
