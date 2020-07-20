@@ -1142,6 +1142,10 @@ local function onExchangeOptionClicked()
         local first_army, second_army = count_armies()
         local number_of_units_first, number_of_units_second = number_of_units(first_army), number_of_units(second_army);
         local char = cm:get_character_by_cqi(RM_TRANSFERS.first);
+        if not char then
+            UnlockExchangeButton(number_of_units_first, number_of_units_second)
+            return
+        end
         local subculture_prefix = subculture_to_prefix[char:faction():subculture()];
         if not subculture_prefix then
             UnlockExchangeButton(number_of_units_first, number_of_units_second)
