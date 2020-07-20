@@ -230,7 +230,8 @@ local units = {
         --SPECIAL
         {"wh_dlc06_dwf_inf_ekrund_miners_0", "dwf_special", 1},
         {"wh_dlc06_dwf_inf_warriors_dragonfire_pass_0", "dwf_special", 1},
-        {"wh_dlc06_dwf_inf_dragonback_slayers_0", "dwf_special", 1},
+        {"wh_dlc06_dwf_inf_dragonback_slayers_0", "dwf_special", 2},
+        {"wh_dlc06_dwf_inf_old_grumblers_0", "dwf_special", 1},
         {"wh_dlc06_dwf_inf_peak_gate_guard_0", "dwf_special", 2},
         {"wh_dlc06_dwf_inf_norgrimlings_ironbreakers_0", "dwf_special", 2},
         {"wh_dlc06_dwf_inf_ulthars_raiders_0", "dwf_special", 1},
@@ -1134,8 +1135,9 @@ core:add_listener(
     false)
 
 --changed block
-sfo_add_unit_caps()
-cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context)
-    caps_first_tick()
+    sfo_add_unit_caps()
+    cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context) 
+        caps_first_tick()
 --@changed block
 end
+    
