@@ -5,8 +5,8 @@ local rm = _G.rm
 local GROUP_KEY_TO_UIC = {} --:map<string, CA_UIC>
 
 local group_image_paths = {
-    ["special"] = {"ui/custom/recruitment_controls/special_units_1.png", "очков Особых отрядов"}, --changed line
-    ["rare"] = {"ui/custom/recruitment_controls/rare_units_1.png", "очков Элитных отрядов"} --changed line
+    ["special"] = {"ui/custom/recruitment_controls/special_units_1.png", "очков особых отрядов"}, --changed line
+    ["rare"] = {"ui/custom/recruitment_controls/rare_units_1.png", "очков элитных отрядов"} --changed line
 }--:map<string, vector<string>>
 
 local created_uic = {} --:vector<string>

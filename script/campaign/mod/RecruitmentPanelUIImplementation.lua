@@ -908,9 +908,9 @@ local function check_individual_army_validity(army_count, rec_char, subculture_p
         local count = (groups[groupID] or 0);
         if count > limit then
             if string.find(groupID, "special") then
-                table.insert(result, {groupID, count, limit, false, "[[col:red]]Обмен невозможен: слишком много Особых отрядов в одной армии! ("..count.."/"..limit..")[[/col]]"})
+                table.insert(result, {groupID, count, limit, false, "[[col:red]]Обмен невозможен: слишком много особых отрядов в одной армии! ("..count.."/"..limit..")[[/col]]"})
             else
-                table.insert(result, {groupID, count, limit, false, "[[col:red]]Обмен невозможен: слишком много Элитных отрядов в одной армии! ("..count.."/"..limit..")[[/col]]"})
+                table.insert(result, {groupID, count, limit, false, "[[col:red]]Обмен невозможен: слишком много элитных отрядов в одной армии! ("..count.."/"..limit..")[[/col]]"})
             end
         else
             table.insert(result, {groupID, count, limit, true, "valid"})

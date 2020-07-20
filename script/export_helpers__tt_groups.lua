@@ -1028,14 +1028,14 @@ local function sfo_add_unit_caps()
 		elseif string.find(units[i][2], "_core") then
 			local prefix = string.gsub(units[i][2], "_core", "")
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Базовый отряд. \n Армии могут содержать неограниченное количество базовых отрядов.", --changed line
+				_text = "Это базовый отряд. \n Армии могут содержать неограниченное количество базовых отрядов.", --changed line
 				_image = "ui/custom/recruitment_controls/common_units.png"
 			})
 		elseif string.find(units[i][2], "_special") then
 			local prefix = string.gsub(units[i][2], "_special", "")
             --changed block
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Особый отряд стоимостью[[col:green]] "..weight.." [[/col]]" .. points_name .. " особых отрядов.", --changed line
+				_text = "Это особый отряд стоимостью[[col:green]] "..weight.." [[/col]]" .. points_name .. " особых отрядов.", --changed line
 				_image = "ui/custom/recruitment_controls/special_units_"..weight..".png"
 			})
             --@changed block
@@ -1043,7 +1043,7 @@ local function sfo_add_unit_caps()
 			local prefix = string.gsub(units[i][2], "_rare", "")
             --changed block
 			rm:set_ui_profile_for_unit(units[i][1], {
-				_text = "Это Элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]" .. points_name .. " элитных отрядов.",
+				_text = "Это элитный отряд стоимостью[[col:green]] "..weight.." [[/col]]" .. points_name .. " элитных отрядов.",
 				_image = "ui/custom/recruitment_controls/rare_units_"..weight..".png"
 			})
             --@changed block
@@ -1095,22 +1095,22 @@ end
 local function caps_first_tick()
     for name, _ in pairs(groups) do
         if string.find(name, "core") then
-            rm:set_ui_name_for_group(name, "Базовых отрядов")
+            rm:set_ui_name_for_group(name, "базовых отрядов")
             --rm:add_character_quantity_limit_for_group(name, 21)
         end
         if string.find(name, "special") then
-            rm:set_ui_name_for_group(name, "Особый отряд")
+            rm:set_ui_name_for_group(name, "особый отряд")
             rm:add_character_quantity_limit_for_group(name, 10)
         end
         if string.find(name, "rare") then
-            rm:set_ui_name_for_group(name, "Элитный отряд")
+            rm:set_ui_name_for_group(name, "элитный отряд")
             rm:add_character_quantity_limit_for_group(name, 7)
         end
     end
     --this gives skrolk core plague monks
     rm:create_unit_override("wh2_main_skv_inf_plague_monks", "core_plague_monks")
     rm:add_subtype_filter_for_unit_override("wh2_main_skv_lord_skrolk", "core_plague_monks")
-    rm:set_ui_profile_for_unit_override("core_plague_monks", "[[col:yellow]]Специальное правило: [[/col]] в армии Лорда Скролка Чумные Монахи считаются Базовыми Отрядами. \n Армии могут иметь неограниченное количество базовых отрядов.", "ui/custom/recruitment_controls/common_units.png") --changed line
+    rm:set_ui_profile_for_unit_override("core_plague_monks", "[[col:yellow]]Специальное правило: [[/col]] в армии Лорда Скролка Чумные Монахи считаются базовыми отрядами. \n Армии могут иметь неограниченное количество базовых отрядов.", "ui/custom/recruitment_controls/common_units.png") --changed line
 
 end;
 
