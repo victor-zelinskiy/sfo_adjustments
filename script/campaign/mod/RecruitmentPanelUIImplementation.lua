@@ -59,8 +59,6 @@ local indexes_to_update = {
     false, --20
 }
 
-local created_icons = {}
-
 local function CacheUnitNameInExchange(panel, index, char_cqi)
     local Panel = find_uicomponent(core:get_ui_root(), "unit_exchange", panel)
     local subculture_prefix
@@ -307,7 +305,6 @@ local function onCharacterSelected(character, parentEvent)
                                                         else
                                                             newIcon:SetTooltipText('', true)
                                                         end
-                                                        table.insert(created_icons, newIcon)
                                                     end
                                                 else
                                                     if not not icon_path then
