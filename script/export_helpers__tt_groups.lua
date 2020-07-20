@@ -7,7 +7,7 @@ local units = {
     {"brt_macemen", "brt_core"},
     {"brt_hood", "brt_special", 1},
     {"brt_tournament", "brt_rare", 1},
-    
+
     --sfo beastmen
     {"bst_Khorngor", "bst_special", 1},
     {"bst_Pestigor", "bst_special", 1},
@@ -15,7 +15,7 @@ local units = {
     {"bst_Tzaangor", "bst_special", 1},
     {"bst_dragon_ogre", "bst_rare", 2},
     {"bst_warhound", "bst_rare", 1},
-    
+
     --sfo chaos
     {"chs_cultist", "chs_core"},
     {"chs_cultist_0", "chs_core"},
@@ -24,24 +24,24 @@ local units = {
     {"chs_slaanesh_bless", "chs_special", 1},
     {"chs_zelot", "chs_special", 1},
     {"chs_chaos_dragon", "chs_rare", 2},
-    
+
     --sfo coast
     {"cst_boarding_crew", "cst_special", 1},
     {"cst_carronade", "cst_core"},
     {"cst_pirate_merc", "cst_special", 1},
     {"cst_raiders", "cst_special", 1},
-    
+
     --sfo dark elves
     {"def_dread", "def_special", 1},
     {"def_manticore_knight", "def_special", 2},
-    
+
     --sfo dwarfs
     {"dwf_thunderers_1", "dwf_core"},
     {"dwf_everguard", "dwf_special", 2},
     {"dwf_daemon_slayer", "dwf_special", 2},
     {"dwf_sniper", "dwf_rare", 1},
     {"dwf_everguard_shield", "dwf_special", 2},
-    
+
     --sfo empire
     {"emp_flagellants_ext", "emp_core"},
     {"emp_wolf_kin", "emp_core"},
@@ -52,7 +52,7 @@ local units = {
     {"emp_ulric_sons", "emp_special", 1},
     {"emp_wolf_knight", "emp_special", 1},
     {"emp_tank_ror", "emp_rare", 2},
-    
+
     --sfo greenskins
     {"grn_forest_spear", "grn_core"},
     {"cr_grn_art_spear_chukka", "grn_core"},
@@ -61,14 +61,14 @@ local units = {
     {"grn_black_orc_boss", "grn_rare", 1},
     {"grn_giant_squig", "grn_rare", 1},
     {"grn_savage_idol_1", "grn_rare", 1},
-    
+
     --sfo high elves
     {"hef_handmaidens", "hef_special", 1},
-    
+
     --sfo lizardmen
     {"lzd_skinks_red", "lzd_core"},
     {"lzd_eternity", "lzd_special", 2},
-    
+
     --sfo norsca
     {"nor_whaler", "nor_special", 1},
     {"nor_whaler_fix", "nor_special", 1},
@@ -82,12 +82,12 @@ local units = {
     {"skv_redguard", "skv_special", 1},
     {"skv_rictus_stormvermin_0", "skv_special", 1},
     {"skv_rictus_stormvermin_1", "skv_special", 1},
-    
+
     -- vmp vampires
     {"vmp_blood_dragon", "vmp_rare", 1},
     {"vmp_zombie_dragon", "vmp_rare", 2},
     {"vmp_black_grail", "vmp_rare", 2},
-    
+
     --sfo wood elves
     {"wef_glade_striders", "wef_core"},
     {"wef_eternal_sword", "wef_special", 1},
@@ -97,11 +97,11 @@ local units = {
     {"wef_ashenhawks", "wef_special", 1},
     {"wef_wargrove", "wef_rare", 1},
     {"wef_kurnoth", "wef_special", 1},
-    
+
         ---------------------------------------------------------------
         --EMPIRE
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh_dlc04_emp_inf_free_company_militia_0", "emp_core"},
@@ -134,7 +134,7 @@ local units = {
         {"wh2_dlc13_emp_veh_war_wagon_ror_0", "emp_rare", 1},
         {"wh_main_emp_veh_luminark_of_hysh_0", "emp_rare", 2},
         {"wh_main_emp_veh_steam_tank", "emp_rare", 2},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh_dlc04_emp_inf_tattersouls_0", "emp_special", 1},
@@ -149,8 +149,8 @@ local units = {
         --RARE
         {"wh_dlc04_emp_art_sunmaker_0", "emp_rare", 1},
         {"wh_dlc04_emp_veh_templehof_luminark_0", "emp_rare", 2},
-        
-        
+
+
         -------ELECTOR COUNTSHIP-------
         --SPECIAL
         {"wh2_dlc13_emp_cav_pistoliers_ror_0", "emp_special", 1},
@@ -166,7 +166,7 @@ local units = {
         {"wh2_dlc13_emp_art_mortar_ror_0", "emp_special", 1},
         {"wh2_dlc13_emp_cav_outriders_ror_0", "emp_special", 1},
         {"wh2_dlc13_emp_veh_steam_tank_ror_0", "emp_special", 1},
-        
+
         -------MARKUS WULFHART IMPERIAL SUPPLY-------
         --CORE
         {"wh2_dlc13_emp_inf_halberdiers_imperial_supply", "emp_core"},
@@ -190,11 +190,11 @@ local units = {
         {"wh2_dlc13_emp_veh_war_wagon_0_imperial_supply", "emp_rare", 1},
         {"wh2_dlc13_emp_veh_war_wagon_1_imperial_supply", "emp_rare", 1},
         {"wh2_dlc13_huntmarshall_veh_obsinite_gyrocopter_0_mercenary", "emp_rare", 1},
-        
+
         ---------------------------------------------------------------
         --DWARFS
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh_main_dwf_inf_dwarf_warrior_0", "dwf_core"},
@@ -225,12 +225,13 @@ local units = {
         {"wh_main_dwf_art_organ_gun", "dwf_rare", 1},
         {"wh_main_dwf_inf_irondrakes_0", "dwf_rare", 1},
         {"wh_main_dwf_inf_irondrakes_2", "dwf_rare", 1},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh_dlc06_dwf_inf_ekrund_miners_0", "dwf_special", 1},
         {"wh_dlc06_dwf_inf_warriors_dragonfire_pass_0", "dwf_special", 1},
-        {"wh_dlc06_dwf_inf_dragonback_slayers_0", "dwf_special", 1},
+        {"wh_dlc06_dwf_inf_dragonback_slayers_0", "dwf_special", 2},
+        {"wh_dlc06_dwf_inf_old_grumblers_0", "dwf_special", 1},
         {"wh_dlc06_dwf_inf_peak_gate_guard_0", "dwf_special", 2},
         {"wh_dlc06_dwf_inf_norgrimlings_ironbreakers_0", "dwf_special", 2},
         {"wh_dlc06_dwf_inf_ulthars_raiders_0", "dwf_special", 1},
@@ -238,12 +239,12 @@ local units = {
         {"wh_dlc06_dwf_art_gob_lobber_0", "dwf_special", 1},
         --RARE
         {"wh_dlc06_dwf_inf_norgrimlings_irondrakes_0", "dwf_rare", 1},
-        
-        
+
+
         ---------------------------------------------------------------
         --VAMPIRE COUNTS
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh_main_vmp_inf_crypt_ghouls", "vmp_core"},
@@ -270,13 +271,13 @@ local units = {
         {"wh_main_vmp_mon_terrorgheist", "vmp_rare", 1},
         {"wh_main_vmp_mon_varghulf", "vmp_rare", 1},
         {"wh_main_vmp_veh_black_coach", "vmp_rare", 1},
-        
+
         -------BLOODLINE REWARDS-------
         --SPECIAL
         {"wh2_dlc11_vmp_inf_crossbowmen", "vmp_special", 1},
         --RARE
         {"wh2_dlc11_vmp_inf_handgunners", "vmp_rare", 1},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh_dlc04_vmp_inf_tithe_0", "vmp_special", 1},
@@ -289,11 +290,11 @@ local units = {
         {"wh_dlc04_vmp_mon_devils_swartzhafen_0", "vmp_special", 1},
         --RARE
         {"wh_dlc04_vmp_veh_claw_of_nagash_0", "vmp_rare", 2},
-        
+
         ---------------------------------------------------------------
         --BRETONNIA
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh_dlc07_brt_cav_knights_errant_0", "brt_core"},
@@ -322,7 +323,7 @@ local units = {
         {"wh_dlc07_brt_cav_royal_hippogryph_knights_0", "brt_rare", 1},
         {"wh_dlc07_brt_cav_royal_pegasus_knights_0", "brt_rare", 1},
         {"wh_main_brt_cav_grail_knights", "brt_rare", 1},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh_pro04_brt_inf_battle_pilgrims_ror_0", "brt_special", 1},
@@ -331,11 +332,11 @@ local units = {
         {"wh_pro04_brt_cav_knights_of_the_realm_ror_0", "brt_rare", 1},
         {"wh_pro04_brt_cav_questing_knights_ror_0", "brt_special", 1},
         {"wh_pro04_brt_cav_mounted_yeomen_ror_0", "brt_special", 1},
-        
+
         ---------------------------------------------------------------
         --GREENSKINS
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh_main_grn_cav_forest_goblin_spider_riders_0", "grn_core"},
@@ -382,7 +383,7 @@ local units = {
         {"wh2_dlc15_grn_mon_rogue_idol_0", "grn_rare", 1},
         {"wh2_dlc15_grn_mon_wyvern_waaagh_0", "grn_rare", 1},
         {"wh_dlc15_grn_mon_arachnarok_spider_waaagh_0", "grn_rare", 1},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh_dlc06_grn_inf_da_warlords_boyz_0", "grn_special", 1},
@@ -405,7 +406,7 @@ local units = {
         ---------------------------------------------------------------
         --WARRIORS OF CHAOS
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh_main_chs_mon_chaos_warhounds_0", "chs_core"},
@@ -437,7 +438,7 @@ local units = {
         {"wh_dlc06_chs_inf_aspiring_champions_0", "chs_rare", 1},
         {"wh_main_chs_inf_chosen_0", "chs_rare", 1},
         {"wh_main_chs_inf_chosen_1", "chs_rare", 1},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh_pro04_chs_inf_forsaken_ror_0", "chs_special", 1},
@@ -447,12 +448,12 @@ local units = {
         {"wh_pro04_chs_inf_chaos_warriors_ror_0", "chs_rare", 1},
         {"wh_pro04_chs_cav_chaos_knights_ror_0", "chs_rare", 1},
         {"wh_pro04_chs_mon_dragon_ogre_ror_0", "chs_rare", 2},
-        
-        
+
+
         ---------------------------------------------------------------
         --BEASTMEN
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh_dlc03_bst_inf_chaos_warhounds_0", "bst_core"},
@@ -479,7 +480,7 @@ local units = {
         --RARE
         {"wh_dlc03_bst_mon_giant_0", "bst_rare", 1},
         {"wh_dlc03_bst_inf_cygor_0", "bst_rare", 2},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh_pro04_bst_inf_ungor_spearmen_ror_0", "bst_special", 1},
@@ -488,11 +489,11 @@ local units = {
         {"wh_pro04_bst_inf_centigors_ror_0", "bst_special", 2},
         {"wh_pro04_bst_inf_minotaurs_ror_0", "bst_special", 2},
         {"wh_pro04_bst_inf_cygor_ror_0", "bst_rare", 2},
-        
+
         ---------------------------------------------------------------
         --WOOD ELVES
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh_dlc05_wef_inf_glade_guard_0", "wef_core"},
@@ -527,12 +528,12 @@ local units = {
         {"wh_pro04_wef_inf_waywatchers_ror_0", "wef_rare", 1},
         {"wh_pro04_wef_cav_wild_riders_ror_0", "wef_special", 2},
         {"wh_pro04_wef_mon_treekin_ror_0", "wef_special", 1},
-        
-        
+
+
         ---------------------------------------------------------------
         --NORSCA
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh_main_nor_mon_chaos_warhounds_0", "nor_core"},
@@ -569,13 +570,13 @@ local units = {
         {"wh_dlc08_nor_mon_war_mammoth_1_fix", "nor_rare", 2},
         {"wh_dlc08_nor_mon_war_mammoth_2", "nor_rare", 2},
         {"wh_dlc08_nor_mon_war_mammoth_2_fix", "nor_rare", 2},
-        
+
         ------- MONSTER HUNTS / GOD ALLEGIANCE REWARDS-------
         --RARE
         {"wh_dlc08_nor_mon_frost_wyrm_ror_0", "nor_rare", 2},
         {"wh_dlc08_nor_mon_war_mammoth_ror_1", "nor_rare", 1},
         {"wh_dlc08_nor_art_hellcannon_battery", "nor_rare", 1},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh_pro04_nor_inf_chaos_marauders_ror_0", "nor_special", 1},
@@ -585,11 +586,11 @@ local units = {
         --RARE
         {"wh_pro04_nor_mon_fimir_ror_0", "nor_rare", 1},
         {"wh_pro04_nor_mon_war_mammoth_ror_0", "nor_rare", 2},
-        
+
         ---------------------------------------------------------------
         --LIZARDMEN
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh2_main_lzd_inf_skink_cohort_1", "lzd_core"},
@@ -627,7 +628,7 @@ local units = {
         {"wh2_dlc12_lzd_mon_ancient_stegadon_1", "lzd_rare", 2},
         {"wh2_dlc13_lzd_mon_dread_saurian_0", "lzd_rare", 2},
         {"wh2_dlc13_lzd_mon_dread_saurian_1", "lzd_rare", 2},
-        
+
         -------BLESSED-------
         --CORE
         {"wh2_main_lzd_inf_skink_skirmishers_blessed_0", "lzd_core"},
@@ -644,7 +645,7 @@ local units = {
         {"wh2_main_lzd_cav_horned_ones_blessed_0", "lzd_special", 1},
         --RARE
         {"wh2_main_lzd_mon_carnosaur_blessed_0", "lzd_rare", 1},
-        
+
         -------NAKAI'S OWN-------
         --SPECIAL
         {"wh2_main_lzd_mon_kroxigors_nakai", "lzd_core"},
@@ -654,7 +655,7 @@ local units = {
         {"wh2_main_lzd_cav_horned_ones_0_nakai", "lzd_special", 2},
         --RARE
         {"wh2_dlc12_lzd_mon_ancient_stegadon_1_nakai", "lzd_rare", 2},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh2_dlc12_lzd_inf_skink_red_crested_ror_0", "lzd_special", 1},
@@ -669,12 +670,12 @@ local units = {
         --RARE
         {"wh2_dlc12_lzd_mon_ancient_stegadon_ror_0", "lzd_rare", 2},
         {"wh2_dlc13_lzd_mon_dread_saurian_ror_0", "lzd_rare", 2},
-        
-        
+
+
         ---------------------------------------------------------------
         --SKAVEN
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh2_main_skv_inf_clanrat_spearmen_0", "skv_core"},
@@ -711,7 +712,7 @@ local units = {
         {"wh2_main_skv_art_warp_lightning_cannon", "skv_rare", 1},
         {"wh2_main_skv_veh_doomwheel", "skv_rare", 1},
         {"wh2_main_skv_mon_hell_pit_abomination", "skv_rare", 1},
-        
+
         -------IKIT CLAW FORBIDDEN WORKSHOP ROR-------
         --SPECIAL
         {"wh2_dlc12_skv_veh_doom_flayer_ror_tech_lab_0", "skv_special", 1},
@@ -720,7 +721,7 @@ local units = {
         {"wh2_dlc12_skv_art_warplock_jezzails_ror_tech_lab_0", "skv_special", 1},
         --RARE
         {"wh2_dlc12_skv_veh_doomwheel_ror_tech_lab_0", "skv_rare", 1},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh2_dlc14_skv_inf_eshin_triads_ror_0", "skv_special", 1},
@@ -735,12 +736,12 @@ local units = {
         --RARE
         {"wh2_dlc12_skv_art_warp_lightning_cannon_ror_0", "skv_rare", 1},
         {"wh2_dlc12_skv_veh_doomwheel_ror_0", "skv_rare", 1},
-        
-        
+
+
         ---------------------------------------------------------------
         --HIGH ELVES
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh2_main_hef_inf_archers_0", "hef_core"},
@@ -752,7 +753,7 @@ local units = {
         {"wh2_main_hef_cav_ellyrian_reavers_0", "hef_core"},
         {"wh2_main_hef_cav_silver_helms_0", "hef_core"},
         {"wh2_main_hef_cav_silver_helms_1", "hef_core"},
-        {"wh2_dlc15_hef_inf_rangers_0", "hef_core"}, 
+        {"wh2_dlc15_hef_inf_rangers_0", "hef_core"},
         --SPECIAL
         {"wh2_dlc10_hef_inf_shadow_warriors_0", "hef_special", 1},
         {"wh2_main_hef_inf_phoenix_guard", "hef_special", 1},
@@ -775,7 +776,7 @@ local units = {
         {"wh2_main_hef_mon_sun_dragon", "hef_rare", 1},
         {"wh2_dlc10_hef_inf_sisters_of_avelorn_0", "hef_rare", 1},
         {"wh2_dlc15_hef_mon_arcane_phoenix_0", "hef_rare", 1},
-        
+
         -------FACTION UNIQUES-------
         --CORE
         {"wh2_dlc10_hef_inf_dryads_0", "hef_core"}, --ALARIELLE
@@ -789,7 +790,7 @@ local units = {
         {"wh2_dlc15_hef_mon_moon_dragon_imrik", "hef_rare", 1}, --Imrik
         {"wh2_dlc15_hef_mon_star_dragon_imrik", "hef_rare", 1}, --Imrik
         {"wh2_dlc15_hef_mon_sun_dragon_imrik", "hef_rare", 1}, --Imrik
-        
+
         -------ROR-------
         --SPECIAL
         {"wh2_dlc10_hef_inf_the_scions_of_mathlann_ror_0", "hef_special", 1},
@@ -804,7 +805,7 @@ local units = {
         --RARE
         {"wh2_dlc10_hef_inf_everqueens_court_guards_ror_0", "hef_rare", 1},
         {"wh2_dlc15_hef_mon_arcane_phoenix_ror_0", "hef_rare", 1},
-    
+
         -------MISTWALKERS-------
         --SPECIAL
         {"wh2_dlc15_hef_inf_mistwalkers_faithbearers_0", "hef_special", 1},
@@ -813,11 +814,11 @@ local units = {
         {"wh2_dlc15_hef_inf_mistwalkers_spireguard_0", "hef_special", 1},
         --RARE
         {"wh2_dlc15_hef_inf_mistwalkers_griffon_knights_0", "hef_rare", 1},
-        
+
         ---------------------------------------------------------------
         --DARK ELVES
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS-------
         --CORE
         {"wh2_main_def_inf_black_ark_corsairs_0", "def_core"},
@@ -851,7 +852,7 @@ local units = {
         {"wh2_main_def_mon_war_hydra", "def_rare", 1},
         {"wh2_dlc14_def_mon_bloodwrack_medusa_0", "def_rare", 1},
         {"wh2_dlc14_def_veh_bloodwrack_shrine_0", "def_rare", 1},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh2_dlc10_def_inf_the_hellebronai_ror_0", "def_special", 1},
@@ -866,12 +867,12 @@ local units = {
         {"wh2_dlc10_def_inf_the_bolt_fiends_ror_0", "def_rare", 1},
         {"wh2_dlc10_def_mon_chill_of_sontar_ror_0", "def_rare", 1},
         {"wh2_dlc14_def_mon_bloodwrack_medusa_ror_0", "def_rare", 1},
-        
-        
+
+
         ---------------------------------------------------------------
         --TOMB KINGS
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS------
         --CORE
         {"wh2_dlc09_tmb_inf_nehekhara_warriors_0", "tmb_core"},
@@ -900,7 +901,7 @@ local units = {
         {"wh2_dlc09_tmb_art_casket_of_souls_0", "tmb_rare", 1},
         {"wh2_dlc09_tmb_art_screaming_skull_catapult_0", "tmb_rare", 1},
         {"wh2_pro06_tmb_mon_bone_giant_0", "tmb_rare", 1},
-        
+
         -------ARKHAN UNDEAD-------
         --CORE
         {"wh2_dlc09_tmb_mon_dire_wolves", "tmb_core"},
@@ -908,15 +909,15 @@ local units = {
         {"wh2_dlc09_tmb_inf_crypt_ghouls", "tmb_core"},
         --SPECIAL
         {"wh2_dlc09_tmb_cav_hexwraiths", "tmb_special", 1},
-        
-        
+
+
         -------LEGIONS OF LEGEND-------
         --SPECIAL
         {"wh2_dlc09_tmb_mon_carrion_ror", "tmb_special", 1},
         {"wh2_dlc09_tmb_cav_necropolis_knights_ror", "tmb_special", 1},
         {"wh2_dlc09_tmb_cav_nehekhara_horsemen_ror", "tmb_special", 1},
         {"wh2_dlc09_tmb_inf_nehekhara_warriors_ror", "tmb_tmb_special", 1},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh2_dlc09_tmb_inf_skeleton_spearmen_ror", "tmb_special", 1},
@@ -926,13 +927,13 @@ local units = {
         {"wh2_dlc09_tmb_mon_sepulchral_stalkers_ror", "tmb_special", 1},
         --RARE
         {"wh2_dlc09_tmb_mon_necrosphinx_ror", "tmb_rare", 2},
-        
-        
-        
+
+
+
         ---------------------------------------------------------------
         --VAMPIRE COAST
         ---------------------------------------------------------------
-        
+
         -------NORMAL UNITS------
         --CORE
         {"wh2_dlc11_cst_inf_sartosa_free_company_0", "cst_core"}, --ARANESSA UNIQUE
@@ -964,7 +965,7 @@ local units = {
         {"wh2_dlc11_cst_mon_necrofex_colossus_0", "cst_rare", 2},
         {"wh2_dlc11_cst_mon_rotting_leviathan_0", "cst_rare", 2},
         {"wh2_dlc11_cst_mon_terrorgheist", "cst_rare", 1},
-        
+
         -------ROR-------
         --SPECIAL
         {"wh2_dlc11_cst_inf_zombie_deckhands_mob_ror_0", "cst_special", 1},
@@ -976,7 +977,7 @@ local units = {
         --RARE
         {"wh2_dlc11_cst_mon_mournguls_ror_0", "cst_rare", 1},
         {"wh2_dlc11_cst_mon_necrofex_colossus_ror_0", "cst_rare", 3}
-    
+
 
 } --:vector<{string, string, number?}>
 
@@ -1128,11 +1129,10 @@ core:add_listener(
 
 if cm:get_saved_value("SFO_APPLY_CAPS") then
     sfo_add_unit_caps()
-    cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context) 
+    cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context)
         caps_first_tick()
     end
 else
 	rm:enforce_ai_restrictions(false)
 end
-    
-    
+
