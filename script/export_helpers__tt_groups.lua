@@ -1011,7 +1011,7 @@ local wardecs_next_divider = math.random(3, 10)
 local wardecs_cur_divider
 local wardecs_at_war_cache = {}
 local wardecs_target_of_war_this_turn = {}
---@chanhed block
+--@changed block
 
 --v function()
 local function sfo_add_unit_caps()
@@ -1123,6 +1123,20 @@ local function caps_first_tick()
 end;
 
 
+--changed block
+local function buffs_first_tick()
+--[[    _G.sfo:log("----------------------------------------buffs_first_tick")
+    local faction_list = cm:model():world():faction_list();
+    for i = 0, faction_list:num_items() - 1 do
+        local current_faction = faction_list:item_at(i);
+        local current_faction_name = current_faction:name();
+        _G.sfo:log("current_faction_name: " .. current_faction_name)
+    end
+    _G.sfo:log("END----------------------------------------buffs_first_tick")]]
+end
+--@changed
+
+
 core:add_listener(
     "SFOcapsDilemma",
     "DilemmaChoiceMadeEvent",
@@ -1164,15 +1178,15 @@ core:add_listener(
         function(context)
             local faction = context:faction()
             local faction_key = faction:name()
-            if not string.find(faction_key, "cst_rogue")
-                    and not string.find(faction_key, "defenders")
-                    and not string.find(faction_key, "chs")
-                    and not string.find(faction_key, "waaagh") then
-                if faction:is_human() == false then
-                    if faction:is_rebel() == false
-                            and faction:is_quest_battle_faction() == false
-                            and faction:is_dead() == false
-                            and faction:is_vassal() == false then
+            if faction:is_human() == false then
+                if faction:is_rebel() == false
+                        and faction:is_quest_battle_faction() == false
+                        and faction:is_dead() == false
+                        and faction:is_vassal() == false then
+                    if not string.find(faction_key, "_cst_rogue_")
+                            and not string.find(faction_key, "defenders")
+                            and not string.find(faction_key, "_chs_")
+                            and not string.find(faction_key, "waaagh") then
                         if wardecs_at_war_cache[faction_key] == nil then
                             if wardecs_next_divider ~= nil then
                                 wardecs_cur_divider = wardecs_next_divider
@@ -1255,10 +1269,10 @@ core:add_listener(
                             end
                         end
                     end
-                else
-                    if wardecs_next_divider == nil then
-                        wardecs_next_divider = math.random(3, 10)
-                    end
+                end
+            else
+                if wardecs_next_divider == nil then
+                    wardecs_next_divider = math.random(3, 10)
                 end
             end
         end,
@@ -1267,9 +1281,9 @@ core:add_listener(
 
 
 --changed block
-    sfo_add_unit_caps()
-    cm.first_tick_callbacks[#cm.first_tick_callbacks+1] = function(context)
-        caps_first_tick()
---@changed block
+sfo_add_unit_caps()
+cm.first_tick_callbacks[#cm.first_tick_callbacks + 1] = function(context)
+    caps_first_tick()
+    buffs_first_tick()
 end
-    
+--@changed block

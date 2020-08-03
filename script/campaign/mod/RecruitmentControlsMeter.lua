@@ -95,7 +95,7 @@ core:add_listener(
         for suffix, _ in pairs(group_image_paths) do
             local groupID = subculture_prefix.."_"..suffix
             local uicParent = find_uicomponent(core:get_ui_root(),"units_panel", "main_units_panel", "icon_list")
-            if uicParent then
+            if not not uicParent then
                 local uic = find_uicomponent(uicParent, "rm_display_"..groupID)
                 if not uic then
                     local uicSibling = find_uicomponent(uicParent, "dy_upkeep")
