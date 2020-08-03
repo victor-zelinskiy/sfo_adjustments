@@ -338,10 +338,19 @@ local function onCharacterSelected(character, parentEvent)
                 rm:check_all_units_on_character(current_character)
                 rm:enforce_all_units_on_current_character()
                 core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
-            elseif parentEvent == 'CharacterSelected' or parentEvent == 'RecruiterManagerPanelClosedMercenaries' then
+            elseif parentEvent == 'CharacterSelected' then
                 rm:check_all_units_on_character(current_character)
                 rm:enforce_all_units_on_current_character()
                 core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+            elseif parentEvent == 'RecruiterManagerPanelClosedMercenaries' then
+                cm:callback(function()
+                    local uicParent = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "icon_list")
+                    if not not uicParent then
+                        rm:check_all_units_on_character(current_character)
+                        rm:enforce_all_units_on_current_character()
+                        core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
+                    end
+                end, 0.2)
             end
         end, 0.1)
     else
