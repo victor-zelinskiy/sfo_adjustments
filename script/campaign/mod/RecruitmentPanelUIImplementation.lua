@@ -253,6 +253,8 @@ local function onCharacterSelected(character, parentEvent)
             local uic_units = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "units");
 
             if not not panel then
+                local horde_uic = find_uicomponent(panel, "tabgroup", "tab_horde_buildings");
+                local horde_mode = horde_uic and horde_uic:CurrentState() == "selected";
                 if not not uic_units then
                     for i = 0, uic_units:ChildCount() - 1 do
                         local unitComponent = UIComponent(uic_units:Find(i));
@@ -286,7 +288,11 @@ local function onCharacterSelected(character, parentEvent)
                                                     if not not icon_path then
                                                         local newIcon = UIComponent(uicSibling:CopyComponent(icon_name))
                                                         panel:Adopt(newIcon:Address())
-                                                        newIcon:SetVisible(true)
+                                                        if horde_mode then
+                                                            newIcon:SetVisible(false)
+                                                        else
+                                                            newIcon:SetVisible(true)
+                                                        end
                                                         newIcon:SetImagePath(icon_path, 0)
                                                         newIcon:SetImagePath(icon_path, 1)
                                                         newIcon:SetCurrentStateImageOpacity(0, 0)
@@ -308,7 +314,11 @@ local function onCharacterSelected(character, parentEvent)
                                                     end
                                                 else
                                                     if not not icon_path then
-                                                        icon:SetVisible(true)
+                                                        if horde_mode then
+                                                            icon:SetVisible(false)
+                                                        else
+                                                            icon:SetVisible(true)
+                                                        end
                                                         icon:SetImagePath(icon_path, 1)
                                                         local final_x = x + 32
                                                         local final_y = y + 17
@@ -375,6 +385,60 @@ local function onCharacterSelected(character, parentEvent)
         end, 0.1)
     end
 end
+
+core:add_listener(
+        "RecruiterManagerOkButtonListener",
+        "ComponentLClickUp",
+        function(context)
+            return context.string == "tab_horde_buildings"
+        end,
+        function()
+            local panel = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel");
+            if not not panel then
+                local local_faction = cm:get_local_faction(true);
+                if not not local_faction then
+                    local cm_local_faction = cm:get_faction(local_faction)
+                    if not not cm_local_faction then
+                        local local_subculture_prefix = subculture_to_prefix[cm_local_faction:subculture()]
+                        for i = 0, 19 do
+                            local icon_name = local_subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                            local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                            if not not icon then
+                                icon:SetVisible(false)
+                            end
+                        end
+                    end
+                end
+            end
+        end,
+        true);
+
+core:add_listener(
+        "RecruiterManagerOkButtonListener",
+        "ComponentLClickUp",
+        function(context)
+            return context.string == "tab_army"
+        end,
+        function()
+            local panel = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel");
+            if not not panel then
+                local local_faction = cm:get_local_faction(true);
+                if not not local_faction then
+                    local cm_local_faction = cm:get_faction(local_faction)
+                    if not not cm_local_faction then
+                        local local_subculture_prefix = subculture_to_prefix[cm_local_faction:subculture()]
+                        for i = 0, 19 do
+                            local icon_name = local_subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                            local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                            if not not icon then
+                                icon:SetVisible(true)
+                            end
+                        end
+                    end
+                end
+            end
+        end,
+        true);
 --@changed block
 
 cm:add_first_tick_callback(function()
