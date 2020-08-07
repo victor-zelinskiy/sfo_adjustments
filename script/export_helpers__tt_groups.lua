@@ -1011,6 +1011,16 @@ local wardecs_next_divider = math.random(3, 10)
 local wardecs_cur_divider
 local wardecs_at_war_cache = {}
 local wardecs_target_of_war_this_turn = {}
+
+local tier_1_factions = {
+    "_vmp_",
+    "_grn_"
+}
+
+local tier_2_factions = {
+    "_hef_",
+    "_def_"
+}
 --@changed block
 
 --v function()
@@ -1114,14 +1124,68 @@ end;
 
 --changed block
 local function buffs_first_tick()
---[[    _G.sfo:log("----------------------------------------buffs_first_tick")
-    local faction_list = cm:model():world():faction_list();
-    for i = 0, faction_list:num_items() - 1 do
-        local current_faction = faction_list:item_at(i);
-        local current_faction_name = current_faction:name();
-        _G.sfo:log("current_faction_name: " .. current_faction_name)
+    if cm:is_new_game() then
+        local faction_list = cm:model():world():faction_list();
+        for i = 0, faction_list:num_items() - 1 do
+            local current_faction = faction_list:item_at(i);
+            local current_faction_name = current_faction:name();
+            if current_faction:is_human() == false then
+                if current_faction:is_rebel() == false
+                        and current_faction:is_quest_battle_faction() == false
+                        and current_faction:is_vassal() == false
+                        and not string.find(current_faction_name, "_qb") then
+                    local roll = cm:random_number(100)
+                    local buff_prefix = "vize_buff_"
+                    if string.find(current_faction_name, "_tmb_") then
+                        buff_prefix = "vize_buff_tmb_"
+                    end
+                    local is_tier_1 = false
+                    for key, tier_1_faction in ipairs(tier_1_factions) do
+                        if string.find(current_faction_name, tier_1_faction) then
+                            if roll > 30 then
+                                roll = roll - 20
+                            end
+                            is_tier_1 = true
+                            break
+                        end
+                    end
+                    if not is_tier_1 then
+                        for key, tier_2_faction in ipairs(tier_2_factions) do
+                            if string.find(current_faction_name, tier_2_faction) then
+                                if roll > 30 then
+                                    roll = roll - 10
+                                end
+                                break
+                            end
+                        end
+                    end
+                    local buff_name
+                    if roll <= 10 then
+                        buff_name = buff_prefix .. '1';
+                    elseif roll > 10 and roll <= 20 then
+                        buff_name = buff_prefix .. '2';
+                    elseif roll > 20 and roll <= 30 then
+                        buff_name = buff_prefix .. '3';
+                    elseif roll > 30 and roll <= 40 then
+                        buff_name = buff_prefix .. '4';
+                    elseif roll > 40 and roll <= 50 then
+                        buff_name = buff_prefix .. '5';
+                    elseif roll > 50 and roll <= 60 then
+                        buff_name = buff_prefix .. '6';
+                    elseif roll > 60 and roll <= 70 then
+                        buff_name = buff_prefix .. '7';
+                    elseif roll > 70 and roll <= 80 then
+                        buff_name = buff_prefix .. '8';
+                    elseif roll > 80 and roll <= 90 then
+                        buff_name = buff_prefix .. '9';
+                    elseif roll > 90 then
+                        buff_name = buff_prefix .. '10';
+                    end
+                    cm:apply_effect_bundle(buff_name, current_faction_name, 0);
+                end
+            end
+        end
     end
-    _G.sfo:log("END----------------------------------------buffs_first_tick")]]
 end
 --@changed
 
