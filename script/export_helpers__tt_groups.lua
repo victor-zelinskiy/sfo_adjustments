@@ -1154,7 +1154,7 @@ local function buffs_first_tick()
                     for key, tier_1_faction in ipairs(tier_1_factions) do
                         if string.find(current_faction_name, tier_1_faction) then
                             if roll > 30 then
-                                roll = roll - 20
+                                roll = roll - cm:random_number(40, 20)
                             end
                             is_tier_1 = true
                             break
@@ -1164,7 +1164,7 @@ local function buffs_first_tick()
                         for key, tier_2_faction in ipairs(tier_2_factions) do
                             if string.find(current_faction_name, tier_2_faction) then
                                 if roll > 30 then
-                                    roll = roll - 10
+                                    roll = roll - cm:random_number(20, 10)
                                 end
                                 break
                             end
