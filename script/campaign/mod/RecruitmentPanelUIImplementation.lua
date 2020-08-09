@@ -36,6 +36,9 @@ subculture_to_prefix["wh_main_sc_grn_savage_orcs"] = "grn"
 --changed block
 local exchange_armies_cache = {}
 
+local is_temp_force_update_restrictions = false
+local is_force_update_restrictions = false
+
 local indexes_to_update = {
     false, --1
     false, --2
@@ -482,6 +485,9 @@ cm:add_first_tick_callback(function()
             --is our clicked component a unit?
             if string.find(unit_component_ID, "_mercenary") and UIComponent(context.component):CurrentState() == "active" and (not UIComponent(context.component):GetTooltipText():find("col:red")) then
                 --its a unit! steal the users input so that they don't click more shit while we calculate.
+                --changed block
+                is_temp_force_update_restrictions = true
+                --@changed block
                 cm:steal_user_input(true);
                 rm:log("Locking recruitment button for ["..unit_component_ID.."] temporarily");
                 --reduce the string to get the name of the unit.
@@ -606,12 +612,47 @@ cm:add_first_tick_callback(function()
         rm:log("Player Character Completed Battle!")
         local character = context:character()
         --# assume character: CA_CHAR
-        rm:get_character_by_cqi(character:command_queue_index()):set_army_stale()
-        rm:get_character_by_cqi(character:command_queue_index()):set_queue_stale()
+        local current_character = rm:get_character_by_cqi(character:command_queue_index())
+        current_character:set_army_stale()
+        current_character:set_queue_stale()
+        is_force_update_restrictions = true
     end,
     true)
 
 
+    --changed block
+    core:add_listener(
+            "ClickButtonRecruitmentListener",
+            "ComponentLClickUp",
+            function(context) return context.string == "button_recruitment" or context.string == "button_renown" end,
+            function()
+                if is_force_update_restrictions or is_temp_force_update_restrictions then
+                    local current_character = rm:current_character()
+                    if current_character == nil then
+                        return
+                    end
+                    cm:callback( function()
+                        current_character:clear_restrictions()
+                        rm:check_all_units_on_character(current_character)
+                        rm:enforce_all_units_on_current_character()
+                        is_force_update_restrictions = false
+                        is_temp_force_update_restrictions = false
+                    end, 0.1)
+                end
+            end,
+            true
+    );
+
+    core:add_listener(
+            "ClickButtonHireRenownListener",
+            "ComponentLClickUp",
+            function(context) return context.string == "button_hire_renown" end,
+            function()
+                is_temp_force_update_restrictions = false
+            end,
+            true
+    );
+    --@changed block
 
     --add character moved listener
     core:add_listener(
