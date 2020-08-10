@@ -201,6 +201,7 @@ local function cache_armies(char_cqi, second_char_cqi)
         char = cm:get_character_by_cqi(char_cqi);
         subculture_prefix = subculture_to_prefix[char:faction():subculture()]
     end
+    exchange_armies_cache = {}
 
     if not not subculture_prefix then
         for i = 1, 20 do
@@ -1365,6 +1366,7 @@ cm:add_first_tick_callback(function()
     --@changed block
 
 
+    --changed block
     core:add_listener(
         "RecruiterManagerOnExchangePanelClosed",
         "PanelClosedCampaign",
@@ -1373,12 +1375,14 @@ cm:add_first_tick_callback(function()
         end,
         function(context)
             rm:log("Exchange panel closed, setting armies stale!")
+            is_force_update_restrictions = true
             for _, cqi in pairs(RM_TRANSFERS) do
                 rm:get_character_by_cqi(cqi):set_army_stale()
-                core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
             end
+            core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
         end,
         true
     )
+    --@changed block
 
 end)
