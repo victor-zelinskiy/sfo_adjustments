@@ -56,24 +56,27 @@ local function update_display(uic, rec_char, groupID)
     end
     --changed block
     cm:callback( function()
-        local current_count = rec_char:get_group_counts_on_character(groupID)
-        local cap = rec_char:get_quantity_limit_for_group(groupID)
-        if image then
-            uic:SetImagePath(image, 1)
-        end
-        if current_count and cap then
-            uic:SetStateText(tostring(current_count) .. "/" .. tostring(cap))
-            uic:SetVisible(true)
-        else
-            uic:SetVisible(false)
-        end
-        local col = "dark_g"
-        if current_count >= cap then
-            col = "red"
-        end
-        if name and current_count and cap then
-            local tt_string = "Вы использовали "..tostring(current_count).." из "..tostring(cap).." доступных "..name --changed line
-            uic:SetTooltipText(tt_string, true)
+        local units_panel = find_uicomponent(core:get_ui_root(), "units_panel")
+        if units_panel then
+            local current_count = rec_char:get_group_counts_on_character(groupID)
+            local cap = rec_char:get_quantity_limit_for_group(groupID)
+            if image then
+                uic:SetImagePath(image, 1)
+            end
+            if current_count and cap then
+                uic:SetStateText(tostring(current_count) .. "/" .. tostring(cap))
+                uic:SetVisible(true)
+            else
+                uic:SetVisible(false)
+            end
+            local col = "dark_g"
+            if current_count >= cap then
+                col = "red"
+            end
+            if name and current_count and cap then
+                local tt_string = "Вы использовали "..tostring(current_count).." из "..tostring(cap).." доступных "..name --changed line
+                uic:SetTooltipText(tt_string, true)
+            end
         end
     end, 0.2, "updateDisplayCallback")
     --@changed block
