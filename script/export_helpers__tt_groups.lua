@@ -1021,6 +1021,11 @@ local tier_2_factions = {
     "_hef_",
     "_def_"
 }
+
+local tier_D_factions = {
+    "_bst_",
+    "_chs_"
+}
 --@changed block
 
 --v function()
@@ -1161,12 +1166,24 @@ local function buffs_first_tick()
                         end
                     end
                     if not is_tier_1 then
+                        local is_tier_2 = false
                         for key, tier_2_faction in ipairs(tier_2_factions) do
                             if string.find(current_faction_name, tier_2_faction) then
                                 if roll > 30 then
                                     roll = roll - cm:random_number(20, 10)
                                 end
+                                is_tier_2 = true
                                 break
+                            end
+                        end
+                        if not is_tier_2 then
+                            for key, tier_D_faction in ipairs(tier_D_factions) do
+                                if string.find(current_faction_name, tier_D_faction) then
+                                    if roll < 80 then
+                                        roll = roll + cm:random_number(70, 50)
+                                    end
+                                    break
+                                end
                             end
                         end
                     end
