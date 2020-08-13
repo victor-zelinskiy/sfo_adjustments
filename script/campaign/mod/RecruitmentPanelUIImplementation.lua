@@ -239,13 +239,23 @@ local function onCharacterSelected(character, parentEvent)
         local unit_list = character:military_force():unit_list();
         local num_items = unit_list:num_items();
         local queueNum = current_character._queueNum
-        local sum = num_items + queueNum
-        for i = 0, 19 do
-            if i >= sum then
+        if parentEvent == 'RecruiterManagerOkButtonListener' then
+            for i = 0, 19 do
                 local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
                 local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
                 if not not icon then
                     icon:SetVisible(false)
+                end
+            end
+        else
+            local sum = num_items + queueNum
+            for i = 0, 19 do
+                if i >= sum then
+                    local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                    local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                    if not not icon then
+                        icon:SetVisible(false)
+                    end
                 end
             end
         end
@@ -257,13 +267,22 @@ local function onCharacterSelected(character, parentEvent)
             local uic_units = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "units");
 
             if not not panel then
+                if parentEvent == 'RecruiterManagerOkButtonListener' then
+                    for i = 0, 19 do
+                        local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                        local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                        if not not icon then
+                            icon:SetVisible(false)
+                        end
+                    end
+                end
                 local horde_uic = find_uicomponent(panel, "tabgroup", "tab_horde_buildings");
                 local horde_mode = horde_uic and horde_uic:CurrentState() == "selected";
                 if not not uic_units then
                     for i = 0, uic_units:ChildCount() - 1 do
                         local unitComponent = UIComponent(uic_units:Find(i));
                         local armyUnitName;
-                        if i < num_items then
+                        if i < num_items and parentEvent ~= 'RecruiterManagerOkButtonListener' then
                             local unit_from_list = unit_list:item_at(i);
                             armyUnitName = unit_from_list:unit_key();
                         else
