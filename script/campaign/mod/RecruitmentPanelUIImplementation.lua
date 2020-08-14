@@ -296,8 +296,11 @@ local function onCharacterSelected(character, parentEvent, inputUnitId)
             --add icons
             local panel = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel");
             local uic_units = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "units");
-
+            local childCount;
             if not not panel then
+                if not not uic_units then
+                    childCount = uic_units:ChildCount() - 1;
+                end
                 if parentEvent ~= 'RecruiterManagerOnQueuedMercenaryClicked' then
                     if parentEvent == 'RecruiterManagerOkButtonListener' then
                         for i = 0, 19 do
@@ -305,6 +308,16 @@ local function onCharacterSelected(character, parentEvent, inputUnitId)
                             local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
                             if not not icon then
                                 icon:SetVisible(false)
+                            end
+                        end
+                    else
+                        for i = 0, 19 do
+                            local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                            local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                            if not not icon then
+                                if childCount ~= nil and i > childCount then
+                                    icon:SetVisible(false)
+                                end
                             end
                         end
                     end
