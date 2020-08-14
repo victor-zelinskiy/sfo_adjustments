@@ -1012,14 +1012,13 @@ local wardecs_cur_divider
 local wardecs_at_war_cache = {}
 local wardecs_target_of_war_this_turn = {}
 
-local tier_1_factions = {
-    "_vmp_",
-    "_grn_"
-}
+local tier_1_factions = {}
 
 local tier_2_factions = {
     "_hef_",
-    "_def_"
+    "_def_",
+    "_vmp_",
+    "_grn_"
 }
 
 local tier_D_factions = {

@@ -88,6 +88,17 @@ function zar_twh_beastmen_rising()
                 else
                     cm:set_saved_value("zar_bst_player_choice", 2);
                 end
+				local max_armies_count;
+				local large_max_armies_count;
+				if bst:is_human() or cm:get_faction("wh_main_chs_chaos"):is_human() then
+					max_armies_count = 5
+					large_max_armies_count = 12
+				else
+					max_armies_count = cm:random_number(15, 5)
+					large_max_armies_count = cm:random_number(20, 12)
+				end
+				cm:set_saved_value("zar_bst_max_armies_count", max_armies_count);
+				cm:set_saved_value("zar_bst_large_max_armies_count", large_max_armies_count);
 				--@changed block
 			end;
 
@@ -201,19 +212,23 @@ function bst_uprising_player_turn()
 		end;
 
 		if cm:get_saved_value("beastmen_uprising_stage") == 1 then
-			if cm:get_saved_value("bst_uprising_armies_max") < 5 then 
+			--changed
+			local max_armies_count = cm:get_saved_value("zar_bst_max_armies_count");
+			if cm:get_saved_value("bst_uprising_armies_max") < max_armies_count then
 				bst_uprising_spawn_army();
 			else
 				cm:set_saved_value("beastmen_uprising_stage", 2);
 			end;
 		end;
 
-		if cm:get_saved_value("beastmen_uprising_stage") == 3 then 
-			if cm:get_saved_value("bst_uprising_armies_max") < 12 then
+		if cm:get_saved_value("beastmen_uprising_stage") == 3 then
+			local max_armies_count = cm:get_saved_value("zar_bst_large_max_armies_count");
+			if cm:get_saved_value("bst_uprising_armies_max") < max_armies_count then
 				bst_uprising_spawn_army();
 			else
 				core:remove_listener("beastmen_uprising") ;
 			end;
+			--@changed
 		end;
 
 		if cm:get_saved_value("beastmen_uprising_stage") == 0 then 
@@ -443,24 +458,24 @@ function bst_uprising_spawn_army()
 end
 
 function get_scripted_army_string_tw()
-
+	--changed
 	local difficulty = cm:model():difficulty_level();
-	
 	local is_multiplayer = cm:is_multiplayer();
-
-	local army_size = 10;
-
+	local army_size = 14;
 	if is_multiplayer then
-		army_size = 10;				-- mp = normal (it's unsafe to rely on difficulty level, it can be different between clients)
+		army_size = cm:random_number(16, 12);
+	elseif cm:get_saved_value("zar_bst_player_choice") == 1 or cm:get_faction("wh_main_chs_chaos"):is_human() then
+		army_size = cm:random_number(12, 10);
 	elseif difficulty == 0 then
-		army_size = 10;				-- normal
+		army_size = cm:random_number(16, 12);				-- normal
 	elseif difficulty == -1 then
-		army_size = 11;				-- hard
+		army_size = cm:random_number(16, 13);				-- hard
 	elseif difficulty == -2 then
-		army_size = 12;				-- very hard
+		army_size = cm:random_number(17, 13);				-- very hard
 	elseif difficulty == -3 then
-		army_size = 12;				-- legendary
+		army_size = cm:random_number(17, 13);				-- legendary
 	end;
+	--@changed
 	
 	local army_string = "wh_dlc03_bst_inf_minotaurs_0,wh_dlc03_bst_inf_cygor_0,wh_dlc03_bst_inf_centigors_0";
 
