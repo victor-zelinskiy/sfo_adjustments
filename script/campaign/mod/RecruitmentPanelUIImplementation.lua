@@ -35,6 +35,7 @@ subculture_to_prefix["wh_main_sc_grn_savage_orcs"] = "grn"
 
 --changed block
 local exchange_armies_cache = {}
+local last_on_recruit_option_clicked
 
 local is_temp_force_update_restrictions = false
 local is_force_update_restrictions = false
@@ -228,8 +229,20 @@ local function update_cache(index)
     CacheUnitNameInExchange("main_units_panel_2", index)
 end
 
-
-local function onCharacterSelected(character, parentEvent)
+--changed block
+local function onCharacterSelected(character, parentEvent, inputUnitId)
+    if parentEvent == 'RecruiterManagerOnRecruitOptionClicked' then
+        last_on_recruit_option_clicked = os.clock()
+    end
+    if parentEvent == 'RecruiterManagerPanelClosedMercenaries' then
+        local current_clock = os.clock()
+        if last_on_recruit_option_clicked ~= nil then
+            local diff = current_clock - last_on_recruit_option_clicked
+            if diff < 1.0 then
+                return
+            end
+        end
+    end
     local subculture_prefix = subculture_to_prefix[character:faction():subculture()]
     if character:has_military_force() and character:faction():is_human() and character:faction():name() == cm:get_local_faction(true) then
         --# assume character: CA_CHAR
@@ -239,24 +252,42 @@ local function onCharacterSelected(character, parentEvent)
         local unit_list = character:military_force():unit_list();
         local num_items = unit_list:num_items();
         local queueNum = current_character._queueNum
-        if parentEvent == 'RecruiterManagerOkButtonListener' then
-            for i = 0, 19 do
-                local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
-                local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
-                if not not icon then
-                    icon:SetVisible(false)
-                end
-            end
-        else
-            local sum = num_items + queueNum
-            for i = 0, 19 do
-                if i >= sum then
+        if parentEvent ~= 'RecruiterManagerOnQueuedMercenaryClicked' then
+            if parentEvent == 'RecruiterManagerOkButtonListener' then
+                for i = 0, 19 do
                     local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
                     local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
                     if not not icon then
                         icon:SetVisible(false)
                     end
                 end
+            else
+                if inputUnitId == nil then
+                    local sum = num_items + queueNum
+                    for i = 0, 19 do
+                        if i >= sum then
+                            local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                            local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                            if not not icon then
+                                icon:SetVisible(false)
+                            end
+                        end
+                    end
+                end
+            end
+        else
+            local last_visible
+            for i = 0, 19 do
+                local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                if not not icon then
+                    if icon:Visible() == true then
+                        last_visible = icon;
+                    end
+                end
+            end
+            if last_visible ~= nil then
+                last_visible:SetVisible(false)
             end
         end
 
@@ -267,93 +298,101 @@ local function onCharacterSelected(character, parentEvent)
             local uic_units = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "units");
 
             if not not panel then
-                if parentEvent == 'RecruiterManagerOkButtonListener' then
-                    for i = 0, 19 do
-                        local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
-                        local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
-                        if not not icon then
-                            icon:SetVisible(false)
+                if parentEvent ~= 'RecruiterManagerOnQueuedMercenaryClicked' then
+                    if parentEvent == 'RecruiterManagerOkButtonListener' then
+                        for i = 0, 19 do
+                            local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                            local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                            if not not icon then
+                                icon:SetVisible(false)
+                            end
                         end
                     end
-                end
-                local horde_uic = find_uicomponent(panel, "tabgroup", "tab_horde_buildings");
-                local horde_mode = horde_uic and horde_uic:CurrentState() == "selected";
-                if not not uic_units then
-                    for i = 0, uic_units:ChildCount() - 1 do
-                        local unitComponent = UIComponent(uic_units:Find(i));
-                        local armyUnitName;
-                        if i < num_items and parentEvent ~= 'RecruiterManagerOkButtonListener' then
-                            local unit_from_list = unit_list:item_at(i);
-                            armyUnitName = unit_from_list:unit_key();
-                        else
-                            unitComponent:SimulateMouseOn();
-                            local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
-                            local rawstring = unitInfo:GetStateText();
-                            local infostart = string.find(rawstring, "unit/") + 5;
-                            local infoend = string.find(rawstring, "]]") - 1;
-                            armyUnitName = string.sub(rawstring, infostart, infoend)
-                            unitComponent:SimulateMouseOff();
-                        end
-                        local x, y = unitComponent:Position()
-                        if not not subculture_prefix then
-                            if char_cqi ~= nil then
-                                if not not armyUnitName then
-                                    local unit = rm:get_unit(armyUnitName, current_character)
-                                    if not not unit then
-                                        local uicParent = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "icon_list")
-                                        if not not uicParent then
-                                            local uicSibling = find_uicomponent(uicParent, "dy_upkeep")
-                                            if not not uicSibling then
-                                                local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
-                                                local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
-                                                local icon_path = unit._UIPip;
-                                                if not icon then
-                                                    if not not icon_path then
-                                                        local newIcon = UIComponent(uicSibling:CopyComponent(icon_name))
-                                                        panel:Adopt(newIcon:Address())
-                                                        if horde_mode then
-                                                            newIcon:SetVisible(false)
+                    local horde_uic = find_uicomponent(panel, "tabgroup", "tab_horde_buildings");
+                    local horde_mode = horde_uic and horde_uic:CurrentState() == "selected";
+                    if not not uic_units then
+                        for i = 0, uic_units:ChildCount() - 1 do
+                            if inputUnitId == nil or i == uic_units:ChildCount() - 1 then
+                                local unitComponent = UIComponent(uic_units:Find(i));
+                                local armyUnitName;
+                                if i < num_items and parentEvent ~= 'RecruiterManagerOkButtonListener' then
+                                    local unit_from_list = unit_list:item_at(i);
+                                    armyUnitName = unit_from_list:unit_key();
+                                else
+                                    if inputUnitId ~= nil then
+                                        armyUnitName = inputUnitId
+                                    else
+                                        unitComponent:SimulateMouseOn();
+                                        local unitInfo = find_uicomponent(core:get_ui_root(), "UnitInfoPopup", "tx_unit-type");
+                                        local rawstring = unitInfo:GetStateText();
+                                        local infostart = string.find(rawstring, "unit/") + 5;
+                                        local infoend = string.find(rawstring, "]]") - 1;
+                                        armyUnitName = string.sub(rawstring, infostart, infoend)
+                                        unitComponent:SimulateMouseOff();
+                                    end
+                                end
+                                local x, y = unitComponent:Position()
+                                if not not subculture_prefix then
+                                    if char_cqi ~= nil then
+                                        if not not armyUnitName then
+                                            local unit = rm:get_unit(armyUnitName, current_character)
+                                            if not not unit then
+                                                local uicParent = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "icon_list")
+                                                if not not uicParent then
+                                                    local uicSibling = find_uicomponent(uicParent, "dy_upkeep")
+                                                    if not not uicSibling then
+                                                        local icon_name = subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                                                        local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                                                        local icon_path = unit._UIPip;
+                                                        if not icon then
+                                                            if not not icon_path then
+                                                                local newIcon = UIComponent(uicSibling:CopyComponent(icon_name))
+                                                                panel:Adopt(newIcon:Address())
+                                                                if horde_mode then
+                                                                    newIcon:SetVisible(false)
+                                                                else
+                                                                    newIcon:SetVisible(true)
+                                                                end
+                                                                newIcon:SetImagePath(icon_path, 0)
+                                                                newIcon:SetImagePath(icon_path, 1)
+                                                                newIcon:SetCurrentStateImageOpacity(0, 0)
+                                                                newIcon:SetStateText('')
+                                                                newIcon:SetCanResizeHeight(true)
+                                                                newIcon:SetCanResizeWidth(true)
+                                                                newIcon:Resize(30, 30)
+                                                                newIcon:SetCanResizeHeight(false)
+                                                                newIcon:SetCanResizeWidth(false)
+                                                                local final_x = x + 32
+                                                                local final_y = y + 17
+                                                                newIcon:MoveTo(final_x, final_y)
+                                                                local ui_text = unit._UIText;
+                                                                if not not ui_text then
+                                                                    newIcon:SetTooltipText(ui_text, true)
+                                                                else
+                                                                    newIcon:SetTooltipText('', true)
+                                                                end
+                                                            end
                                                         else
-                                                            newIcon:SetVisible(true)
+                                                            if not not icon_path then
+                                                                if horde_mode then
+                                                                    icon:SetVisible(false)
+                                                                else
+                                                                    icon:SetVisible(true)
+                                                                end
+                                                                icon:SetImagePath(icon_path, 1)
+                                                                local final_x = x + 32
+                                                                local final_y = y + 17
+                                                                icon:MoveTo(final_x, final_y)
+                                                                local ui_text = unit._UIText;
+                                                                if not not ui_text then
+                                                                    icon:SetTooltipText(ui_text, true)
+                                                                else
+                                                                    icon:SetTooltipText('', true)
+                                                                end
+                                                            else
+                                                                icon:SetVisible(false)
+                                                            end
                                                         end
-                                                        newIcon:SetImagePath(icon_path, 0)
-                                                        newIcon:SetImagePath(icon_path, 1)
-                                                        newIcon:SetCurrentStateImageOpacity(0, 0)
-                                                        newIcon:SetStateText('')
-                                                        newIcon:SetCanResizeHeight(true)
-                                                        newIcon:SetCanResizeWidth(true)
-                                                        newIcon:Resize(30, 30)
-                                                        newIcon:SetCanResizeHeight(false)
-                                                        newIcon:SetCanResizeWidth(false)
-                                                        local final_x = x + 32
-                                                        local final_y = y + 17
-                                                        newIcon:MoveTo(final_x, final_y)
-                                                        local ui_text = unit._UIText;
-                                                        if not not ui_text then
-                                                            newIcon:SetTooltipText(ui_text, true)
-                                                        else
-                                                            newIcon:SetTooltipText('', true)
-                                                        end
-                                                    end
-                                                else
-                                                    if not not icon_path then
-                                                        if horde_mode then
-                                                            icon:SetVisible(false)
-                                                        else
-                                                            icon:SetVisible(true)
-                                                        end
-                                                        icon:SetImagePath(icon_path, 1)
-                                                        local final_x = x + 32
-                                                        local final_y = y + 17
-                                                        icon:MoveTo(final_x, final_y)
-                                                        local ui_text = unit._UIText;
-                                                        if not not ui_text then
-                                                            icon:SetTooltipText(ui_text, true)
-                                                        else
-                                                            icon:SetTooltipText('', true)
-                                                        end
-                                                    else
-                                                        icon:SetVisible(false)
                                                     end
                                                 end
                                             end
@@ -408,6 +447,7 @@ local function onCharacterSelected(character, parentEvent)
         end, 0.1)
     end
 end
+--@changed block
 
 core:add_listener(
         "RecruiterManagerOkButtonListener",
@@ -489,7 +529,9 @@ cm:add_first_tick_callback(function()
                 local cm_char = cm:get_character_by_cqi(current_character:command_queue_index());
                 core:trigger_event("RecruiterManagerGroupCountUpdated", cm_char)
                 cm:callback( function()
-                    onCharacterSelected(cm_char, 'RecruiterManagerOnRecruitOptionClicked')
+                    --changed block
+                    onCharacterSelected(cm_char, 'RecruiterManagerOnRecruitOptionClicked', unitID)
+                    --@changed block
                 end, 0.1)
             end
         end,
@@ -520,7 +562,9 @@ cm:add_first_tick_callback(function()
                 local cm_char = cm:get_character_by_cqi(current_character:command_queue_index());
                 core:trigger_event("RecruiterManagerGroupCountUpdated", cm_char)
                 cm:callback( function()
-                    onCharacterSelected(cm_char, 'RecruiterManagerOnMercenaryOptionClicked')
+                    --changed block
+                    onCharacterSelected(cm_char, 'RecruiterManagerOnMercenaryOptionClicked', unitID)
+                    --@changed block
                 end, 0.1)
             end
         end,
@@ -559,10 +603,14 @@ cm:add_first_tick_callback(function()
             if not current_character:is_queue_stale() then --if we aren't stale, we must have a unit
                 rm:log("Queued Unit name to be removed is: "..unitID)
                 --changed block
-                current_character:clear_restrictions()
+                local merc_units = current_character._mercenaryQueue
+                current_character:clear_mercenary_queue()
+                for i = 1, #merc_units do
+                    rm:check_individual_unit_on_character(merc_units[i], current_character)
+                end
                 rm:remove_unit_from_character_queue_and_refresh_limits(unitID, current_character)
-                rm:enforce_unit_and_grouped_units(unitID, current_character)
                 rm:check_individual_unit_on_character(unitID, current_character)
+                current_character:clear_restrictions()
                 rm:enforce_all_units_on_current_character()
                 core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(current_character:command_queue_index()))
                 rm:output_state(current_character) -- will only fire when logging is enabled.
@@ -608,7 +656,10 @@ cm:add_first_tick_callback(function()
             end
             rm:log("Queued Mercenary name to be removed is: "..unitID)
             rm:check_individual_unit_on_character(unitID, current_character)
-            rm:enforce_unit_and_grouped_units(unitID, rm:current_character())
+            --changed block
+            current_character:clear_restrictions()
+            rm:enforce_all_units_on_current_character()
+            --@changed block
             rm:output_state(current_character) -- will only fire when logging is enabled.
             core:trigger_event("RecruiterManagerGroupCountUpdated", cm:get_character_by_cqi(rm:current_character():command_queue_index()))
             cm:remove_callback("RMOnQueueMercOnCharacterSelected")
