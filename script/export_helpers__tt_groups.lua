@@ -1015,10 +1015,8 @@ local wardecs_target_of_war_this_turn = {}
 local tier_1_factions = {}
 
 local tier_2_factions = {
-    "_hef_",
-    "_def_",
-    "_vmp_",
-    "_grn_"
+    "wh2_main_def_naggarond",
+    "wh2_main_def_cult_of_pleasure",
 }
 
 local tier_D_factions = {
@@ -1137,7 +1135,8 @@ local function buffs_first_tick()
                 if current_faction:is_rebel() == false
                         and current_faction:is_quest_battle_faction() == false
                         and current_faction:is_vassal() == false
-                        and not string.find(current_faction_name, "_qb") then
+                        and not string.find(current_faction_name, "_qb")
+                        and not string.find(current_faction_name, "_separatists") then
                     local roll = cm:random_number(100)
                     local buff_prefix = "vize_buff_"
                     if string.find(current_faction_name, "_tmb_") then
