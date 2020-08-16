@@ -462,6 +462,30 @@ local function onCharacterSelected(character, parentEvent, inputUnitId)
 end
 --@changed block
 
+
+core:add_listener(
+        "FactionAboutToEndTurnListener",
+        "FactionAboutToEndTurn",
+        function(context)
+            return context:faction():is_human()
+        end,
+        function(context)
+            local panel = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel");
+            if not not panel then
+                local local_subculture_prefix = subculture_to_prefix[context:faction():subculture()]
+                if not not subculture_to_prefix then
+                    for i = 0, 19 do
+                        local icon_name = local_subculture_prefix .. '_main_rm_cost_icon_' .. tostring(i)
+                        local icon = find_uicomponent(core:get_ui_root(), "units_panel", icon_name)
+                        if not not icon then
+                            icon:SetVisible(false)
+                        end
+                    end
+                end
+            end
+        end,
+        true)
+
 core:add_listener(
         "RecruiterManagerOkButtonListener",
         "ComponentLClickUp",
