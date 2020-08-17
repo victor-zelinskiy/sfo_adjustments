@@ -1134,6 +1134,16 @@ end;
 local function buffs_first_tick()
     if cm:is_new_game() then
         local faction_list = cm:model():world():faction_list();
+        local tier_1_min_modifier = cm:random_number(40, 20)
+        local tier_1_max_modifier = cm:random_number(80, 40)
+        local tier_2_min_modifier = cm:random_number(20, 10)
+        local tier_2_max_modifier = cm:random_number(70, 35)
+        local tier_D_min_modifier = cm:random_number(60, 40)
+        local tier_D_max_modifier = cm:random_number(90, 70)
+        local main_min_modifier = cm:random_number(25, 1)
+        local main_max_modifier = cm:random_number(100, 75)
+        local use_skip_roll = cm:random_number(100)
+        local use_default_roll = cm:random_number(100)
         for i = 0, faction_list:num_items() - 1 do
             local current_faction = faction_list:item_at(i);
             local current_faction_name = current_faction:name();
@@ -1143,9 +1153,19 @@ local function buffs_first_tick()
                         and current_faction:is_vassal() == false
                         and not string.find(current_faction_name, "_qb")
                         and not string.find(current_faction_name, "_separatists") then
-                    local pre_roll = cm:random_number(1000);
-                    if pre_roll < 950 then
-                        local roll = cm:random_number(100)
+                    local skip_roll
+                    if use_skip_roll > 50 then
+                        skip_roll = cm:random_number(1000);
+                    else
+                        skip_roll = 1
+                    end
+                    if skip_roll < 950 then
+                        local roll;
+                        if use_default_roll > 40 then
+                            roll = cm:random_number(100)
+                        else
+                            roll = cm:random_number(main_max_modifier, main_min_modifier)
+                        end
                         local buff_prefix = "vize_buff_"
                         if string.find(current_faction_name, "_tmb_") then
                             buff_prefix = "vize_buff_tmb_"
@@ -1156,9 +1176,8 @@ local function buffs_first_tick()
                         local is_player_chaos = cm:get_faction("wh_dlc03_bst_beastmen"):is_human() or cm:get_faction("wh_main_chs_chaos"):is_human()
                         for key, tier_1_faction in ipairs(tier_1_factions) do
                             if string.find(current_faction_name, tier_1_faction) then
-                                _G.sfo:log("tier_1 for: " .. current_faction_name)
                                 if roll > 30 then
-                                    roll = roll - cm:random_number(50, 25)
+                                    roll = roll - cm:random_number(tier_1_max_modifier, tier_1_min_modifier)
                                 end
                                 is_tier_1 = true
                                 break
@@ -1167,9 +1186,8 @@ local function buffs_first_tick()
                         if not is_tier_1 then
                             for key, tier_2_faction in ipairs(tier_2_factions) do
                                 if string.find(current_faction_name, tier_2_faction) then
-                                    _G.sfo:log("tier_2 for: " .. current_faction_name)
                                     if roll > 30 then
-                                        roll = roll - cm:random_number(30, 15)
+                                        roll = roll - cm:random_number(tier_2_max_modifier, tier_2_min_modifier)
                                     end
                                     is_tier_2 = true
                                     break
@@ -1179,10 +1197,9 @@ local function buffs_first_tick()
                                 for key, tier_D_faction in ipairs(tier_D_factions) do
                                     if string.find(current_faction_name, tier_D_faction) then
                                         if roll < 80 then
-                                            roll = roll + cm:random_number(80, 50)
+                                            roll = roll + cm:random_number(tier_D_max_modifier, tier_D_min_modifier)
                                         end
                                         is_tier_D = true
-                                        _G.sfo:log("is_tier_D: " .. current_faction_name)
                                         break
                                     end
                                 end
@@ -1214,14 +1231,9 @@ local function buffs_first_tick()
                                 buff_name = buff_prefix .. '10';
                             end
                         end
-                        _G.sfo:log("apply buff_name: " .. buff_name .. " for current_faction_name: " .. current_faction_name)
                         cm:apply_effect_bundle(buff_name, current_faction_name, 0);
-                    else
-                        _G.sfo:log("skip apply for: " .. current_faction_name)
                     end
                 end
-            else
-                cm:apply_effect_bundle("vize_buff_11", current_faction_name, 0);
             end
         end
     end
