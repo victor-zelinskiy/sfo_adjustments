@@ -1012,17 +1012,101 @@ local wardecs_cur_divider
 local wardecs_at_war_cache = {}
 local wardecs_target_of_war_this_turn = {}
 
+local vize_ai_faction_balance_manager_turn;
+local vize_ai_faction_balance_manager_comeback_chance;
+local vize_ai_faction_balance_manager_nerf_1_regions;
+local vize_ai_faction_balance_manager_nerf_2_regions;
+
+
+local major_factions = {
+    --empire
+    ["wh_main_emp_empire"] = true,
+    ["wh2_dlc13_emp_golden_order"] = true,
+    ["wh2_dlc13_emp_the_huntmarshals_expedition"] = true,
+
+    --vampire
+    ["wh_main_vmp_vampire_counts"] = true,
+    ["wh_main_vmp_schwartzhafen"] = true,
+    ["wh2_dlc11_vmp_the_barrow_legion"] = true,
+
+    --dwarfs
+    ["wh_main_dwf_dwarfs"] = true,
+    ["wh_main_dwf_karak_izor"] = true,
+    ["wh_main_dwf_karak_kadrin"] = true,
+
+    --greenskins
+    ["wh_main_grn_greenskins"] = true,
+    ["wh_main_grn_crooked_moon"] = true,
+    ["wh_main_grn_orcs_of_the_bloody_hand"] = true,
+    ["wh2_dlc15_grn_broken_axe"] = true,
+
+    --bretonnia
+    ["wh_main_brt_bretonnia"] = true,
+    ["wh_main_brt_bordeleaux"] = true,
+    ["wh_main_brt_carcassonne"] = true,
+    ["wh2_dlc14_brt_chevaliers_de_lyonesse"] = true,
+
+    --tomb_kings
+    ["wh2_dlc09_tmb_khemri"] = true,
+    ["wh2_dlc09_tmb_exiles_of_nehek"] = true,
+    ["wh2_dlc09_tmb_lybaras"] = true,
+    ["wh2_dlc09_tmb_followers_of_nagash"] = true,
+
+    --high_elves
+    ["wh2_main_hef_avelorn"] = true,
+    ["wh2_main_hef_eataine"] = true,
+    ["wh2_main_hef_order_of_loremasters"] = true,
+    ["wh2_main_hef_nagarythe"] = true,
+    ["wh2_main_hef_yvresse"] = true,
+    ["wh2_main_hef_caledor"] = true,
+
+    --dark_elves
+    ["wh2_main_def_naggarond"] = true,
+    ["wh2_main_def_har_ganeth"] = true,
+    ["wh2_main_def_cult_of_pleasure"] = true,
+    ["wh2_dlc11_def_the_blessed_dread"] = true,
+    ["wh2_main_def_hag_graef"] = true,
+
+    --vampire_coast
+    ["wh2_dlc11_cst_noctilus"] = true,
+    ["wh2_dlc11_cst_pirates_of_sartosa"] = true,
+    ["wh2_dlc11_cst_the_drowned"] = true,
+    ["wh2_dlc11_cst_vampire_coast"] = true,
+
+    --lizardmen
+    ["wh2_main_lzd_hexoatl"] = true,
+    ["wh2_main_lzd_last_defenders"] = true,
+    ["wh2_main_lzd_tlaqua"] = true,
+    ["wh2_dlc12_lzd_cult_of_sotek"] = true,
+
+    --skaven
+    ["wh2_main_skv_clan_mors"] = true,
+    ["wh2_main_skv_clan_skyre"] = true,
+    ["wh2_main_skv_clan_pestilens"] = true,
+    ["wh2_dlc09_skv_clan_rictus"] = true,
+    ["wh2_main_skv_clan_eshin"] = true
+
+}
+
 local tier_1_factions = {
     "wh2_main_def_naggarond",
     "wh_main_grn_greenskins",
     "wh_main_vmp_vampire_counts",
-    "wh_main_emp_empire",
     "wh_main_dwf_dwarfs"
 }
 
 local tier_2_factions = {
     "wh2_main_def_cult_of_pleasure",
-    "wh_main_vmp_schwartzhafen"
+    "wh_main_vmp_schwartzhafen",
+    "wh_main_sc_grn_savage_orcs",
+    "wh_main_emp_empire"
+}
+
+local tier_C_factions = {
+    "_tmb_",
+    "_skv_",
+    "_hef_",
+    "_cst_"
 }
 
 local tier_D_factions = {
@@ -1138,10 +1222,14 @@ local function buffs_first_tick()
         local tier_1_max_modifier = cm:random_number(80, 40)
         local tier_2_min_modifier = cm:random_number(20, 10)
         local tier_2_max_modifier = cm:random_number(70, 35)
+        local tier_C_min_modifier = cm:random_number(35, 15)
+        local tier_C_max_modifier = cm:random_number(55, 45)
         local tier_D_min_modifier = cm:random_number(60, 40)
         local tier_D_max_modifier = cm:random_number(90, 70)
         local main_min_modifier = cm:random_number(25, 1)
         local main_max_modifier = cm:random_number(100, 75)
+        local gold_min_modifier = cm:random_number(8000, 500)
+        local gold_max_modifier = cm:random_number(10000, gold_min_modifier + 2)
         local use_skip_roll = cm:random_number(100)
         local use_default_roll = cm:random_number(100)
         for i = 0, faction_list:num_items() - 1 do
@@ -1173,6 +1261,7 @@ local function buffs_first_tick()
                         local is_tier_1 = false
                         local is_tier_2 = false
                         local is_tier_D = false
+                        local is_tier_C = false
                         local is_player_chaos = cm:get_faction("wh_dlc03_bst_beastmen"):is_human() or cm:get_faction("wh_main_chs_chaos"):is_human()
                         for key, tier_1_faction in ipairs(tier_1_factions) do
                             if string.find(current_faction_name, tier_1_faction) then
@@ -1201,6 +1290,17 @@ local function buffs_first_tick()
                                         end
                                         is_tier_D = true
                                         break
+                                    end
+                                end
+                                if not is_tier_D then
+                                    for key, tier_C_faction in ipairs(tier_C_factions) do
+                                        if string.find(current_faction_name, tier_C_faction) then
+                                            if roll < 70 then
+                                                roll = roll + cm:random_number(tier_C_max_modifier, tier_C_min_modifier)
+                                            end
+                                            is_tier_C = true
+                                            break
+                                        end
                                     end
                                 end
                             end
@@ -1232,6 +1332,21 @@ local function buffs_first_tick()
                             end
                         end
                         cm:apply_effect_bundle(buff_name, current_faction_name, 0);
+                        if current_faction:is_dead() == false then
+                            local negative_gold_roll = cm:random_number(100);
+                            local negative_gold = false
+                            if is_tier_D == false and is_tier_C == false then
+                                if negative_gold_roll > 50 then
+                                    negative_gold = true
+                                end
+                            end
+                            local gold_modifier = cm:random_number(gold_max_modifier, gold_min_modifier)
+                            if negative_gold == true then
+                                cm:treasury_mod(current_faction_name, 0 - gold_modifier)
+                            else
+                                cm:treasury_mod(current_faction_name, gold_modifier)
+                            end
+                        end
                     end
                 end
             end
@@ -1260,6 +1375,94 @@ core:add_listener(
     false)
 
 --changed block
+core:add_listener(
+        "ai_faction_balance_listener",
+        "FactionTurnStart",
+        function(context)
+            if vize_ai_faction_balance_manager_turn == nil then
+                vize_ai_faction_balance_manager_turn = cm:get_cached_value('vize_ai_faction_balance_manager_turn', function()
+                    return cm:random_number(70, 40);
+                end)
+            end
+            return context:faction():is_human() == false and cm:model():turn_number() > vize_ai_faction_balance_manager_turn
+        end,
+        function(context)
+            local faction = context:faction()
+            local faction_key = faction:name()
+            local region_count = faction:region_list():num_items();
+
+            if vize_ai_faction_balance_manager_nerf_1_regions == nil then
+                vize_ai_faction_balance_manager_nerf_1_regions = cm:get_cached_value('vize_ai_faction_balance_manager_nerf_1_regions', function()
+                    return cm:random_number(25, 15);
+                end)
+            end
+
+            if vize_ai_faction_balance_manager_nerf_2_regions == nil then
+                vize_ai_faction_balance_manager_nerf_2_regions = cm:get_cached_value('vize_ai_faction_balance_manager_nerf_2_regions', function()
+                    return cm:random_number(35, 30);
+                end)
+            end
+
+            if region_count > 0 and region_count < 3 and not faction:has_effect_bundle("vize_buff_11") then
+                if major_factions[faction_key] == true then
+                    if faction:is_dead() == false then
+                        local at_war_with_human = false
+                        local human_factions = cm:get_human_factions();
+                        for i = 1, #human_factions do
+                            local human_faction = human_factions[i];
+                            if faction:at_war_with(human_faction) == true then
+                                at_war_with_human = true
+                                break
+                            end
+                        end
+                        if at_war_with_human == false then
+                            local buff_turns = cm:random_number(30, 15);
+                            if vize_ai_faction_balance_manager_comeback_chance == nil then
+                                vize_ai_faction_balance_manager_comeback_chance = cm:get_cached_value('vize_ai_faction_balance_manager_comeback_chance', function()
+                                    return cm:random_number(40, 10);
+                                end)
+                            end
+                            local vize_ai_faction_comeback_buff_roll = cm:get_cached_value('vize_ai_cb_b_roll_' .. faction_key, function()
+                                return cm:random_number(100);
+                            end)
+                            if vize_ai_faction_comeback_buff_roll > vize_ai_faction_balance_manager_comeback_chance then
+                                cm:set_saved_value('vize_ai_cb_b_roll_' .. faction_key, 0)
+                                cm:apply_effect_bundle("vize_buff_11", faction_key, buff_turns);
+                                local gold_modifier = cm:random_number(50000, 5000)
+                                cm:treasury_mod(faction_key, gold_modifier)
+                            end
+                        end
+                    end
+                end
+            else
+                if region_count > vize_ai_faction_balance_manager_nerf_1_regions and not faction:has_effect_bundle("vize_buff_0") then
+                    local vize_ai_nerf_debuff_1_applied = cm:get_cached_value('vize_ai_nerf_debuff_1_' .. faction_key, function()
+                        return 0;
+                    end)
+                    if vize_ai_nerf_debuff_1_applied == 0 then
+                        cm:set_saved_value('vize_ai_nerf_debuff_1_' .. faction_key, 1)
+                        local debuff_turns = cm:random_number(40, 20);
+                        cm:apply_effect_bundle("vize_buff_0", faction_key, debuff_turns);
+                        local gold_modifier = cm:random_number(20000, 10000)
+                        cm:treasury_mod(faction_key, 0 - gold_modifier)
+                    end
+                end
+                if region_count > vize_ai_faction_balance_manager_nerf_2_regions and not faction:has_effect_bundle("vize_buff_n_1") then
+                    local vize_ai_nerf_debuff_2_applied = cm:get_cached_value('vize_ai_nerf_debuff_2_' .. faction_key, function()
+                        return 0;
+                    end)
+                    if vize_ai_nerf_debuff_2_applied == 0 then
+                        cm:set_saved_value('vize_ai_nerf_debuff_2_' .. faction_key, 1)
+                        local debuff_turns = cm:random_number(60, 30);
+                        cm:apply_effect_bundle("vize_buff_n_1", faction_key, debuff_turns);
+                        local gold_modifier = cm:random_number(60000, 30000)
+                        cm:treasury_mod(faction_key, 0 - gold_modifier)
+                    end
+                end
+            end
+        end,
+        true)
+
 core:add_listener(
         "faction_turn_start_AI_wardecs",
         "FactionTurnStart",
