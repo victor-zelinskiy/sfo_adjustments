@@ -1265,20 +1265,26 @@ local function buffs_first_tick()
                         local is_player_chaos = cm:get_faction("wh_dlc03_bst_beastmen"):is_human() or cm:get_faction("wh_main_chs_chaos"):is_human()
                         for key, tier_1_faction in ipairs(tier_1_factions) do
                             if string.find(current_faction_name, tier_1_faction) then
-                                if roll > 30 then
-                                    roll = roll - cm:random_number(tier_1_max_modifier, tier_1_min_modifier)
+                                local skip_tier_1_roll = cm:random_number(100)
+                                if skip_tier_1_roll > 5 then
+                                    if roll > 30 then
+                                        roll = roll - cm:random_number(tier_1_max_modifier, tier_1_min_modifier)
+                                    end
+                                    is_tier_1 = true
                                 end
-                                is_tier_1 = true
                                 break
                             end
                         end
                         if not is_tier_1 then
                             for key, tier_2_faction in ipairs(tier_2_factions) do
                                 if string.find(current_faction_name, tier_2_faction) then
-                                    if roll > 30 then
-                                        roll = roll - cm:random_number(tier_2_max_modifier, tier_2_min_modifier)
+                                    local skip_tier_2_roll = cm:random_number(100)
+                                    if skip_tier_2_roll > 5 then
+                                        if roll > 30 then
+                                            roll = roll - cm:random_number(tier_2_max_modifier, tier_2_min_modifier)
+                                        end
+                                        is_tier_2 = true
                                     end
-                                    is_tier_2 = true
                                     break
                                 end
                             end
@@ -1409,7 +1415,10 @@ core:add_listener(
                 end)
             end
 
-            if region_count > 0 and region_count < 3 and not faction:has_effect_bundle("vize_buff_11") then
+            local vize_ai_cb_b_reg_count = cm:get_cached_value('vize_ai_cb_b_r_count_' .. faction_key, function()
+                return cm:random_number(5, 2);
+            end)
+            if region_count > 0 and region_count < vize_ai_cb_b_reg_count and not faction:has_effect_bundle("vize_buff_11") then
                 if major_factions[faction_key] == true then
                     if faction:is_dead() == false then
                         local at_war_with_human = false
@@ -1421,22 +1430,26 @@ core:add_listener(
                                 break
                             end
                         end
-                        if at_war_with_human == false then
-                            local buff_turns = cm:random_number(30, 15);
-                            if vize_ai_faction_balance_manager_comeback_chance == nil then
-                                vize_ai_faction_balance_manager_comeback_chance = cm:get_cached_value('vize_ai_faction_balance_manager_comeback_chance', function()
-                                    return cm:random_number(40, 10);
-                                end)
-                            end
-                            local vize_ai_faction_comeback_buff_roll = cm:get_cached_value('vize_ai_cb_b_roll_' .. faction_key, function()
-                                return cm:random_number(100);
+                        local buff_turns = cm:random_number(30, 15);
+                        if vize_ai_faction_balance_manager_comeback_chance == nil then
+                            vize_ai_faction_balance_manager_comeback_chance = cm:get_cached_value('vize_ai_faction_balance_manager_comeback_chance', function()
+                                return cm:random_number(30, 10);
                             end)
-                            if vize_ai_faction_comeback_buff_roll > vize_ai_faction_balance_manager_comeback_chance then
-                                cm:set_saved_value('vize_ai_cb_b_roll_' .. faction_key, 0)
-                                cm:apply_effect_bundle("vize_buff_11", faction_key, buff_turns);
-                                local gold_modifier = cm:random_number(50000, 5000)
-                                cm:treasury_mod(faction_key, gold_modifier)
-                            end
+                        end
+                        local vize_ai_faction_comeback_buff_roll = cm:get_cached_value('vize_ai_cb_b_roll_' .. faction_key, function()
+                            return cm:random_number(100);
+                        end)
+                        local local_ai_faction_balance_manager_comeback_chance;
+                        if at_war_with_human == true then
+                            local_ai_faction_balance_manager_comeback_chance = vize_ai_faction_balance_manager_comeback_chance + cm:random_number(50, 10);
+                        else
+                            local_ai_faction_balance_manager_comeback_chance = vize_ai_faction_balance_manager_comeback_chance
+                        end
+                        if vize_ai_faction_comeback_buff_roll > local_ai_faction_balance_manager_comeback_chance then
+                            cm:set_saved_value('vize_ai_cb_b_roll_' .. faction_key, vize_ai_faction_comeback_buff_roll - 10)
+                            cm:apply_effect_bundle("vize_buff_11", faction_key, buff_turns);
+                            local gold_modifier = cm:random_number(50000, 5000)
+                            cm:treasury_mod(faction_key, gold_modifier)
                         end
                     end
                 end
