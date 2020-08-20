@@ -732,7 +732,10 @@ cm:add_first_tick_callback(function()
     core:add_listener(
             "ClickButtonRecruitmentListener",
             "ComponentLClickUp",
-            function(context) return context.string == "button_recruitment" or context.string == "button_renown" or context.string == "button_blessed_spawn_pool" end,
+            function(context) return context.string == "button_recruitment"
+                    or context.string == "button_renown"
+                    or context.string == "button_blessed_spawn_pool"
+                    or context.string == "button_imperial_supplies_pool" end,
             function()
                 if is_force_update_restrictions or is_temp_force_update_restrictions then
                     local current_character = rm:current_character()
