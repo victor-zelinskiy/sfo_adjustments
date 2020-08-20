@@ -1285,20 +1285,26 @@ local function buffs_first_tick()
                             if not is_tier_2 then
                                 for key, tier_D_faction in ipairs(tier_D_factions) do
                                     if string.find(current_faction_name, tier_D_faction) then
-                                        if roll < 80 then
-                                            roll = roll + cm:random_number(tier_D_max_modifier, tier_D_min_modifier)
+                                        local skip_tier_D_roll = cm:random_number(100)
+                                        if skip_tier_D_roll > 10 then
+                                            if roll < 80 then
+                                                roll = roll + cm:random_number(tier_D_max_modifier, tier_D_min_modifier)
+                                            end
+                                            is_tier_D = true
                                         end
-                                        is_tier_D = true
                                         break
                                     end
                                 end
                                 if not is_tier_D then
                                     for key, tier_C_faction in ipairs(tier_C_factions) do
                                         if string.find(current_faction_name, tier_C_faction) then
-                                            if roll < 70 then
-                                                roll = roll + cm:random_number(tier_C_max_modifier, tier_C_min_modifier)
+                                            local skip_tier_C_roll = cm:random_number(100)
+                                            if skip_tier_C_roll > 10 then
+                                                if roll < 70 then
+                                                    roll = roll + cm:random_number(tier_C_max_modifier, tier_C_min_modifier)
+                                                end
+                                                is_tier_C = true
                                             end
-                                            is_tier_C = true
                                             break
                                         end
                                     end
