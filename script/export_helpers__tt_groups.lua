@@ -1091,27 +1091,44 @@ local major_factions = {
 local tier_1_factions = {
     "wh2_main_def_naggarond",
     "wh_main_grn_greenskins",
-    "wh_main_vmp_vampire_counts",
-    "wh_main_dwf_dwarfs"
+    "wh_main_vmp_vampire_counts"
 }
 
 local tier_2_factions = {
     "wh2_main_def_cult_of_pleasure",
     "wh_main_vmp_schwartzhafen",
     "wh_main_sc_grn_savage_orcs",
-    "wh_main_emp_empire"
+    "wh_main_dwf_dwarfs",
+    "wh_main_vmp_mousillon"
 }
 
 local tier_C_factions = {
+    "wh2_main_skv_clan_skyre",
+    "wh2_main_skv_clan_pestilens",
+    "wh2_dlc09_skv_clan_rictus",
+    "wh2_main_skv_clan_eshin",
+    "wh2_dlc15_grn_broken_axe",
+    "wh2_dlc14_brt_chevaliers_de_lyonesse",
+    "wh_main_dwf_karak_izor",
+    "wh_main_dwf_karak_kadrin",
+    "wh2_main_hef_eataine",
+    "wh2_main_hef_nagarythe",
+    "wh2_main_hef_yvresse",
+    "wh2_main_hef_caledor",
+    "wh2_main_lzd_last_defenders",
+    "wh2_main_lzd_tlaqua",
+    "wh2_dlc11_def_the_blessed_dread",
+    "wh2_main_def_hag_graef",
+    "wh2_dlc13_emp_golden_order",
+    "wh2_dlc13_emp_the_huntmarshals_expedition",
     "_tmb_",
-    "_skv_",
-    "_hef_",
     "_cst_"
 }
 
 local tier_D_factions = {
     "_bst_",
-    "_chs_"
+    "_chs_",
+    "wh2_dlc09_tmb_exiles_of_nehek"
 }
 --@changed block
 
@@ -1273,6 +1290,7 @@ local function buffs_first_tick()
                         local is_tier_2 = false
                         local is_tier_D = false
                         local is_tier_C = false
+                        local is_chaos_related = string.find(current_faction_name, '_bst_') or string.find(current_faction_name, '_chs_');
                         local is_player_chaos = cm:get_faction("wh_dlc03_bst_beastmen"):is_human() or cm:get_faction("wh_main_chs_chaos"):is_human()
                         for key, tier_1_faction in ipairs(tier_1_factions) do
                             if string.find(current_faction_name, tier_1_faction) then
@@ -1348,8 +1366,16 @@ local function buffs_first_tick()
                         elseif roll > 80 and roll <= 90 then
                             buff_name = buff_prefix .. '9';
                         elseif roll > 90 then
-                            if is_tier_D and roll > 100 and not is_player_chaos then
-                                buff_name = buff_prefix .. '11';
+                            if is_tier_D and roll > 100 then
+                                if is_chaos_related then
+                                    if is_player_chaos then
+                                        buff_name = buff_prefix .. '10';
+                                    else
+                                        buff_name = buff_prefix .. '11';
+                                    end
+                                else
+                                    buff_name = buff_prefix .. '11';
+                                end
                             else
                                 buff_name = buff_prefix .. '10';
                             end
