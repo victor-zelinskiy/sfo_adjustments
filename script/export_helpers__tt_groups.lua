@@ -1107,7 +1107,6 @@ local tier_C_factions = {
     "wh2_main_skv_clan_pestilens",
     "wh2_dlc09_skv_clan_rictus",
     "wh2_main_skv_clan_eshin",
-    "wh2_dlc15_grn_broken_axe",
     "wh2_dlc14_brt_chevaliers_de_lyonesse",
     "wh_main_dwf_karak_izor",
     "wh_main_dwf_karak_kadrin",
@@ -1128,7 +1127,8 @@ local tier_C_factions = {
 local tier_D_factions = {
     "_bst_",
     "_chs_",
-    "wh2_dlc09_tmb_exiles_of_nehek"
+    "wh2_dlc09_tmb_exiles_of_nehek",
+    "wh2_dlc15_grn_broken_axe"
 }
 --@changed block
 
@@ -1369,6 +1369,7 @@ local function buffs_first_tick()
                                 buff_name = buff_prefix .. '10';
                             end
                         end
+                        --_G.sfo:log('current_faction_name: ' .. current_faction_name .. ' buff_name: ' .. buff_name)
                         cm:apply_effect_bundle(buff_name, current_faction_name, 0);
                         if current_faction:is_dead() == false then
                             local negative_gold_roll = cm:random_number(100);
