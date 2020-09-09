@@ -1487,9 +1487,9 @@ core:add_listener(
                     end)
                     if vize_ai_nerf_debuff_1_applied == 0 then
                         cm:set_saved_value('vize_ai_nerf_debuff_1_' .. faction_key, 1)
-                        local debuff_turns = cm:random_number(40, 20);
+                        local debuff_turns = cm:random_number(120, 50);
                         cm:apply_effect_bundle("vize_buff_0", faction_key, debuff_turns);
-                        local gold_modifier = cm:random_number(20000, 10000)
+                        local gold_modifier = cm:random_number(90000, 20000)
                         cm:treasury_mod(faction_key, 0 - gold_modifier)
                     end
                 end
@@ -1499,9 +1499,9 @@ core:add_listener(
                     end)
                     if vize_ai_nerf_debuff_2_applied == 0 then
                         cm:set_saved_value('vize_ai_nerf_debuff_2_' .. faction_key, 1)
-                        local debuff_turns = cm:random_number(60, 30);
+                        local debuff_turns = cm:random_number(160, 60);
                         cm:apply_effect_bundle("vize_buff_n_1", faction_key, debuff_turns);
-                        local gold_modifier = cm:random_number(60000, 30000)
+                        local gold_modifier = cm:random_number(160000, 60000)
                         cm:treasury_mod(faction_key, 0 - gold_modifier)
                     end
                 end
@@ -1553,14 +1553,15 @@ core:add_listener(
                             local faction_names_to_declare_war_150 = {}
                             local faction_names_to_declare_war_50 = {}
                             local attitude_randomizer = math.random(1, 250) - 50;
-                            local war_count_limit = math.random(1, 6)
+                            local war_count_limit = math.random(1, 7)
                             for i = 0, faction_list:num_items() - 1 do
                                 local current_faction = faction_list:item_at(i);
                                 if current_faction:is_human() == false
                                         and current_faction:is_dead() == false
                                         and current_faction:is_rebel() == false
                                         and current_faction:is_quest_battle_faction() == false
-                                        and current_faction:is_vassal() == false then
+                                        and current_faction:is_vassal() == false
+                                        and current_faction:is_allowed_to_capture_territory() == true then
                                     local current_faction_name = current_faction:name();
                                     if faction:at_war_with(current_faction) == false then
                                         local diplomatic_attitude_towards = faction:diplomatic_attitude_towards(current_faction_name)
@@ -1576,9 +1577,12 @@ core:add_listener(
                                             end
                                         end
                                     else
-                                        war_count = war_count + 1;
-                                        if war_count >= war_count_limit then
-                                            break
+                                        local cur_region_count = current_faction:region_list():num_items();
+                                        if cur_region_count > 2 then
+                                            war_count = war_count + 1;
+                                            if war_count >= war_count_limit then
+                                                break
+                                            end
                                         end
                                     end
                                 end
